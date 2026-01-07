@@ -118,6 +118,17 @@
       from { opacity: 0; transform: translateY(5px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    .profile-pic {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin: 1.5rem auto 1rem;
+      display: block;
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
+    }
   </style>
 </head>
 
@@ -125,7 +136,6 @@
 
 <header>
   <h1>Pedro Tarancón-Álvarez</h1>
-  <img src="profile.jpg" alt="Profile picture" class="profile-pic">
   <p>Theoretical Physics and Machine Learning researcher</p>
 </header>
 
