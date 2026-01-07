@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Personal Webpage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #38bdf8;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      color: var(--text);
+    }
+
+    header {
+      padding: 3rem 1rem 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.6rem;
+      font-weight: 600;
+    }
+
+    header p {
+      margin-top: 0.5rem;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      background: rgba(17, 24, 39, 0.9);
+      backdrop-filter: blur(6px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      padding: 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+
+    nav button.active {
+      color: var(--text);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    nav button:hover {
+      color: var(--text);
+    }
+
+    main {
+      max-width: 900px;
+      margin: 2.5rem auto;
+      padding: 0 1rem;
+    }
+
+    section {
+      display: none;
+      animation: fade 0.4s ease;
+      background: rgba(17, 24, 39, 0.75);
+      border-radius: 14px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    section.active {
+      display: block;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-weight: 500;
+      border-bottom: 1px solid #1f2933;
+      padding-bottom: 0.5rem;
+    }
+
+    ul {
+      padding-left: 1.2rem;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Pedro Tarancón-Álvarez</h1>
+  <p>Theoretical Physics and Machine Learning researcher</p>
+</header>
+
+<nav>
+  <button class="tab active" data-tab="bio">Biography</button>
+  <button class="tab" data-tab="research">Research</button>
+  <button class="tab" data-tab="cv">CV</button>
+  <button class="tab" data-tab="contact">Publications</button>
+  <button class="tab" data-tab="contact">Contact</button>
+  <button class="tab" data-tab="contact">About me</button>
+</nav>
+
+<main>
+  <section id="bio" class="active">
+    <h2>Biography</h2>
+    <p>
+      Write a short biography here. This section is meant for a narrative:
+      background, interests, and overall profile.
+    </p>
+  </section>
+
+  <section id="research">
+    <h2>Research</h2>
+    <ul>
+      <li>Topic A — brief explanation</li>
+      <li>Topic B — brief explanation</li>
+      <li>Topic C — brief explanation</li>
+    </ul>
+  </section>
+
+  <section id="cv">
+    <h2>Curriculum Vitae</h2>
+    <ul>
+      <li>2024–present — Position, Institution</li>
+      <li>2020–2024 — PhD, Institution</li>
+      <li>2018–2020 — MSc, Institution</li>
+    </ul>
+    <p>
+      <a href="#">Download PDF CV</a>
+    </p>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <p>
+      Email: <a href="mailto:your@email.com">your@email.com</a><br>
+      GitHub: <a href="#">github.com/yourname</a><br>
+      Google Scholar: <a href="#">profile</a>
+    </p>
+  </section>
+</main>
+
+<footer>
+  © 2026 Your Name
+</footer>
+
+<script>
+  const buttons = document.querySelectorAll(".tab");
+  const sections = document.querySelectorAll("section");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      sections.forEach(s => s.classList.remove("active"));
+
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.tab).classList.add("active");
+    });
+  });
+</script>
+
+</body>
+</html>
