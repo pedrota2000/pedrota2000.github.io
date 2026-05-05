@@ -48,106 +48,133 @@
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; color: #7dd3fc; }
 
-    /* ── Header ───────────────────────────────────────────────── */
-    header {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 3.5rem 1.5rem 2rem;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 2rem;
+    /* ── Hero ─────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      padding: 4rem 1.5rem 6rem;
+      text-align: center;
+      position: relative;
     }
 
-    .profile-pic {
-      width: 140px;
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
       height: 140px;
+      background: linear-gradient(to bottom, transparent, var(--bg0));
+      pointer-events: none;
+    }
+
+    .hero-photo {
+      width: 220px;
+      height: 220px;
       object-fit: cover;
       border-radius: 50%;
       border: 2px solid var(--accent);
-      box-shadow: 0 0 32px rgba(56, 189, 248, 0.25), 0 0 0 6px rgba(56,189,248,0.07);
-      flex-shrink: 0;
+      box-shadow: 0 0 60px rgba(56,189,248,0.3), 0 0 0 8px rgba(56,189,248,0.06);
+      margin-bottom: 2rem;
     }
 
-    .header-text h1 {
-      font-size: 2.2rem;
+    .hero-name {
+      font-size: 2.8rem;
       font-weight: 700;
       letter-spacing: -0.5px;
       background: linear-gradient(100deg, #e2e8f0 30%, var(--accent) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      margin-bottom: 0.4rem;
     }
 
-    .header-text .title {
-      margin-top: 0.3rem;
-      font-size: 1.05rem;
-      color: var(--muted);
-    }
+    .hero-subtitle { font-size: 1.1rem; color: var(--muted); margin-bottom: 0.25rem; }
+    .hero-affil    { font-size: 0.95rem; color: #64748b; margin-bottom: 1.5rem; }
 
-    .header-text .affil {
-      margin-top: 0.2rem;
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    .header-badges {
+    .hero-badges {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin-top: 0.9rem;
+      justify-content: center;
+      max-width: 640px;
     }
 
-    .badge {
-      font-size: 0.78rem;
-      padding: 0.25rem 0.65rem;
-      border-radius: 999px;
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      color: var(--accent);
-      white-space: nowrap;
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #334155;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      animation: bounce 2s infinite;
+      z-index: 2;
     }
 
-    .badge.indigo {
-      background: rgba(129, 140, 248, 0.1);
-      border-color: rgba(129, 140, 248, 0.25);
-      color: var(--accent2);
+    .scroll-hint svg { width: 18px; height: 18px; stroke: #334155; margin-top: 0.2rem; }
+
+    @keyframes bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(6px); }
     }
 
-    .badge.green {
-      background: rgba(52, 211, 153, 0.1);
-      border-color: rgba(52, 211, 153, 0.25);
-      color: var(--accent3);
-    }
-
-    /* ── Nav ──────────────────────────────────────────────────── */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(9, 15, 30, 0.88);
-      backdrop-filter: blur(12px);
+    /* ── Compact sticky nav ───────────────────────────────────── */
+    .compact-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      height: var(--nav-h);
+      background: rgba(4, 10, 22, 0.93);
+      backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      gap: 0.8rem;
+      transform: translateY(-100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
     }
 
-    .nav-inner {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
+    .compact-nav.visible { transform: translateY(0); }
+
+    .nav-photo {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--accent);
+      flex-shrink: 0;
+    }
+
+    .nav-name {
+      font-size: 0.87rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      margin-right: 0.3rem;
+    }
+
+    .nav-tabs {
       display: flex;
       gap: 0;
       overflow-x: auto;
       scrollbar-width: none;
+      flex: 1;
     }
 
-    .nav-inner::-webkit-scrollbar { display: none; }
+    .nav-tabs::-webkit-scrollbar { display: none; }
 
-    nav button {
+    .nav-tabs button {
       background: none;
       border: none;
       color: var(--muted);
-      padding: 0.9rem 1.1rem;
-      font-size: 0.9rem;
+      padding: 0 0.9rem;
+      height: var(--nav-h);
+      font-size: 0.87rem;
       cursor: pointer;
       border-bottom: 2px solid transparent;
       white-space: nowrap;
@@ -155,25 +182,17 @@
       font-family: inherit;
     }
 
-    nav button.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
-
-    nav button:hover { color: var(--text); }
+    .nav-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .nav-tabs button:hover  { color: var(--text); }
 
     /* ── Main ─────────────────────────────────────────────────── */
     main {
       max-width: 900px;
-      margin: 2rem auto 4rem;
-      padding: 0 1.5rem;
+      margin: 0 auto 5rem;
+      padding: 2rem 1.5rem 0;
     }
 
-    section {
-      display: none;
-      animation: fadeUp 0.35s ease;
-    }
-
+    section { display: none; animation: fadeUp 0.35s ease; }
     section.active { display: block; }
 
     @keyframes fadeUp {
@@ -181,7 +200,29 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Cards ────────────────────────────────────────────────── */
+    /* ── Shared components ────────────────────────────────────── */
+    .badge {
+      font-size: 0.78rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(56,189,248,0.1);
+      border: 1px solid rgba(56,189,248,0.25);
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .badge.indigo {
+      background: rgba(129,140,248,0.1);
+      border-color: rgba(129,140,248,0.25);
+      color: var(--accent2);
+    }
+
+    .badge.green {
+      background: rgba(52,211,153,0.1);
+      border-color: rgba(52,211,153,0.25);
+      color: var(--accent3);
+    }
+
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -190,16 +231,8 @@
       margin-bottom: 1.2rem;
     }
 
-    .card h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      color: var(--text);
-    }
-
     .card p, .card li { color: var(--muted); font-size: 0.95rem; }
 
-    /* ── Section headings ────────────────────────────────────── */
     .section-title {
       font-size: 1.35rem;
       font-weight: 600;
@@ -209,16 +242,25 @@
       color: var(--text);
     }
 
-    /* ── Biography ────────────────────────────────────────────── */
-    #bio .lead {
-      font-size: 1.05rem;
-      color: var(--text);
-      margin-bottom: 1rem;
+    /* ── Bio ──────────────────────────────────────────────────── */
+    #bio .lead { font-size: 1.05rem; color: var(--text); margin-bottom: 1rem; }
+    #bio p     { color: var(--muted); margin-bottom: 0.8rem; }
+
+    .supervisor-row { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.6rem; }
+
+    .supervisor-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.9rem 1.2rem;
+      flex: 1;
+      min-width: 200px;
     }
 
-    #bio p { color: var(--muted); margin-bottom: 0.8rem; }
+    .supervisor-card .s-name { font-size: 0.93rem; font-weight: 600; color: var(--text); }
+    .supervisor-card .s-role { font-size: 0.82rem; color: var(--muted); margin-top: 0.1rem; }
 
-    /* ── Research areas ───────────────────────────────────────── */
+    /* ── Research ─────────────────────────────────────────────── */
     .research-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -234,8 +276,8 @@
     }
 
     .research-card .icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
-    .research-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text); }
-    .research-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .research-card h3    { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text); }
+    .research-card p     { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
 
     /* ── Publications ─────────────────────────────────────────── */
     .pub-card {
@@ -247,39 +289,13 @@
       transition: border-color 0.2s;
     }
 
-    .pub-card:hover { border-color: rgba(56, 189, 248, 0.35); }
+    .pub-card:hover { border-color: rgba(56,189,248,0.35); }
 
-    .pub-year {
-      font-size: 0.78rem;
-      color: var(--accent);
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 0.3rem;
-    }
-
-    .pub-title {
-      font-size: 0.98rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 0.3rem;
-      line-height: 1.45;
-    }
-
-    .pub-authors {
-      font-size: 0.84rem;
-      color: var(--muted);
-      margin-bottom: 0.4rem;
-    }
-
-    .pub-journal {
-      font-size: 0.83rem;
-      color: #64748b;
-      margin-bottom: 0.6rem;
-      font-style: italic;
-    }
-
-    .pub-links { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .pub-year    { font-size: 0.78rem; color: var(--accent); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.3rem; }
+    .pub-title   { font-size: 0.98rem; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; line-height: 1.45; }
+    .pub-authors { font-size: 0.84rem; color: var(--muted); margin-bottom: 0.4rem; }
+    .pub-journal { font-size: 0.83rem; color: #64748b; margin-bottom: 0.6rem; font-style: italic; }
+    .pub-links   { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
 
     .pub-link {
       font-size: 0.78rem;
@@ -301,71 +317,49 @@
 
     .pub-link.pdf:hover { background: rgba(52,211,153,0.14); }
 
-    .cite-badge {
-      font-size: 0.75rem;
-      color: #64748b;
-      align-self: center;
-    }
+    .cite-badge { font-size: 0.75rem; color: #64748b; }
 
-    /* ── Timeline (CV) ────────────────────────────────────────── */
+    /* ── CV timeline ──────────────────────────────────────────── */
     .timeline { position: relative; padding-left: 1.5rem; }
 
     .timeline::before {
       content: '';
       position: absolute;
-      left: 0;
-      top: 6px;
-      bottom: 6px;
+      left: 0; top: 6px; bottom: 6px;
       width: 1px;
-      background: linear-gradient(to bottom, var(--accent), rgba(56,189,248,0.1));
+      background: linear-gradient(to bottom, var(--accent), rgba(56,189,248,0.08));
     }
 
-    .timeline-item {
-      position: relative;
-      margin-bottom: 1.5rem;
-    }
+    .timeline-item { position: relative; margin-bottom: 1.6rem; }
 
     .timeline-item::before {
       content: '';
       position: absolute;
-      left: -1.5rem;
-      top: 6px;
-      width: 8px;
-      height: 8px;
+      left: -1.5rem; top: 6px;
+      width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--accent);
       box-shadow: 0 0 8px rgba(56,189,248,0.5);
       transform: translateX(-3.5px);
     }
 
-    .timeline-date {
-      font-size: 0.8rem;
-      color: var(--accent);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      margin-bottom: 0.2rem;
-    }
+    .timeline-date  { font-size: 0.8rem; color: var(--accent); font-weight: 600; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+    .timeline-role  { font-size: 0.97rem; font-weight: 600; color: var(--text); }
+    .timeline-place { font-size: 0.88rem; color: var(--muted); margin-top: 0.1rem; }
+    .timeline-desc  { font-size: 0.85rem; color: #64748b; margin-top: 0.4rem; line-height: 1.6; }
 
-    .timeline-role {
-      font-size: 0.97rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .timeline-place {
-      font-size: 0.88rem;
-      color: var(--muted);
-      margin-top: 0.1rem;
-    }
-
-    .timeline-desc {
-      font-size: 0.85rem;
-      color: #64748b;
+    .timeline-grade {
+      display: inline-block;
+      font-size: 0.75rem;
       margin-top: 0.3rem;
-      line-height: 1.5;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(52,211,153,0.1);
+      border: 1px solid rgba(52,211,153,0.25);
+      color: var(--accent3);
     }
 
-    .cv-section-label {
+    .cv-label {
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
@@ -375,11 +369,7 @@
     }
 
     /* ── Contact ──────────────────────────────────────────────── */
-    .contact-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-    }
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 1rem; }
 
     .contact-card {
       background: var(--card-bg);
@@ -393,20 +383,8 @@
     }
 
     .contact-card:hover { border-color: rgba(56,189,248,0.35); }
-
-    .contact-card .label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .contact-card a {
-      font-size: 0.9rem;
-      color: var(--text);
-      word-break: break-all;
-    }
-
+    .contact-card .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .contact-card a { font-size: 0.9rem; color: var(--text); word-break: break-all; }
     .contact-card a:hover { color: var(--accent); }
 
     /* ── Footer ───────────────────────────────────────────────── */
@@ -420,42 +398,43 @@
 
     /* ── Responsive ───────────────────────────────────────────── */
     @media (max-width: 600px) {
-      header {
-        grid-template-columns: 1fr;
-        text-align: center;
-        padding: 2.5rem 1rem 1.5rem;
-      }
-
-      .profile-pic { margin: 0 auto; }
-      .header-badges { justify-content: center; }
-      .header-text h1 { font-size: 1.7rem; }
+      .hero-name { font-size: 2rem; }
+      .hero-photo { width: 170px; height: 170px; }
+      .nav-name { display: none; }
     }
   </style>
 </head>
 
 <body>
 
-<!-- ══ HEADER ════════════════════════════════════════════════════ -->
-<header>
-  <img src="profile.jpg" alt="Pedro Tarancón-Álvarez" class="profile-pic">
-  <div class="header-text">
-    <h1>Pedro Tarancón-Álvarez</h1>
-    <p class="title">PhD Researcher in Theoretical Physics</p>
-    <p class="affil">Institute of Cosmos Sciences · Universitat de Barcelona (ICCUB)</p>
-    <div class="header-badges">
-      <span class="badge">AdS/CFT</span>
-      <span class="badge">Holography</span>
-      <span class="badge indigo">Physics-Informed Neural Networks</span>
-      <span class="badge indigo">Machine Learning</span>
-      <span class="badge green">General Relativity</span>
-      <span class="badge green">Cosmology</span>
-    </div>
+<!-- ══ HERO ═══════════════════════════════════════════════════════ -->
+<section class="hero" id="heroSection">
+  <img src="profile.jpg" alt="Pedro Tarancón-Álvarez" class="hero-photo">
+  <h1 class="hero-name">Pedro Tarancón-Álvarez</h1>
+  <p class="hero-subtitle">PhD Researcher in Theoretical Physics</p>
+  <p class="hero-affil">Institute of Cosmos Sciences (ICCUB) · Universitat de Barcelona</p>
+  <div class="hero-badges">
+    <span class="badge">AdS/CFT</span>
+    <span class="badge">Holography</span>
+    <span class="badge indigo">Physics-Informed Neural Networks</span>
+    <span class="badge indigo">Machine Learning</span>
+    <span class="badge green">General Relativity</span>
+    <span class="badge green">Cosmology</span>
+    <span class="badge green">Turbulence</span>
   </div>
-</header>
+  <div class="scroll-hint">
+    SCROLL
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+  </div>
+</section>
 
-<!-- ══ NAV ═══════════════════════════════════════════════════════ -->
-<nav>
-  <div class="nav-inner">
+<!-- ══ COMPACT STICKY NAV ═════════════════════════════════════════ -->
+<nav class="compact-nav" id="compactNav">
+  <img src="profile.jpg" alt="" class="nav-photo">
+  <span class="nav-name">Pedro Tarancón-Álvarez</span>
+  <div class="nav-tabs">
     <button class="tab active" data-tab="bio">About</button>
     <button class="tab" data-tab="research">Research</button>
     <button class="tab" data-tab="publications">Publications</button>
@@ -464,44 +443,68 @@
   </div>
 </nav>
 
-<!-- ══ MAIN ══════════════════════════════════════════════════════ -->
+<!-- ══ MAIN ═══════════════════════════════════════════════════════ -->
 <main>
 
-  <!-- ── About ───────────────────────────────────────────────── -->
+  <!-- ── About ──────────────────────────────────────────────── -->
   <section id="bio" class="active">
     <h2 class="section-title">About me</h2>
 
     <p class="lead">
       I am a PhD student in theoretical physics at the
       <a href="https://icc.ub.edu" target="_blank" rel="noopener">Institute of Cosmos Sciences (ICCUB)</a>,
-      Universitat de Barcelona, working at the intersection of holography,
-      general relativity, and machine learning.
+      Universitat de Barcelona, funded by an
+      <strong style="color:var(--text)">FPI fellowship</strong> (Ministerio de Ciencia e Innovación)
+      as part of the project <em>Dark Energy and the Origin of the Universe</em>.
     </p>
 
     <p>
-      My research focuses on applying modern computational and machine-learning methods —
-      in particular <strong style="color:var(--text)">physics-informed neural networks (PINNs)</strong> —
-      to hard problems in theoretical physics. I am especially interested in holographic
-      dualities (AdS/CFT), where one can translate questions about strongly-coupled quantum
-      field theories into gravitational problems in one higher dimension.
+      My PhD work, supervised by
+      <a href="https://scholar.google.com/citations?user=QaGMRZoAAAAJ" target="_blank" rel="noopener">David Mateos</a>
+      and
+      <a href="https://www.rauljimenez.info" target="_blank" rel="noopener">Raúl Jiménez</a>,
+      applies the holographic principle (AdS/CFT correspondence) to study strongly-interacting
+      quantum fields in astrophysical settings — in particular
+      <strong style="color:var(--text)">phase transitions in the early universe</strong>
+      and neutron star mergers.
+      A central computational tool is
+      <strong style="color:var(--text)">physics-informed neural networks (PINNs)</strong>,
+      which I develop to solve the nonlinear inversion problems that arise in holography.
     </p>
 
     <p>
-      A recurring theme in my work is bridging the gap between the analytic structures of
-      theoretical physics and numerical tools: from solving stiff nonlinear PDEs more
-      efficiently, to extracting holographic gravitational duals directly from thermodynamic
-      data, to building AI agents capable of genuine scientific reasoning.
+      I am also active in the study of
+      <strong style="color:var(--text)">holographic turbulence and the geometry of flows</strong>,
+      through my participation in the
+      <em>Simons Collaboration on Geometry and Turbulence</em> (IAS Princeton, 2025).
+      A broader theme across my work is bridging the analytic structure of theoretical physics
+      with modern numerical and AI methods.
     </p>
 
     <p>
       Before my PhD I completed an MSc in Theoretical Physics at the
       <a href="https://www.ift.uam-csic.es" target="_blank" rel="noopener">Instituto de Física Teórica (IFT)</a>,
-      Universidad Autónoma de Madrid, and a Bachelor's degree in Physics at the
+      UAM-CSIC — where my thesis on <em>Quantum Chaos in de Sitter Space and Centaur Geometries</em>
+      was supervised by Juan F. Pedraza and Ayan Kumar Patra — and a BSc in Physics at the
       <a href="https://www.ucm.es" target="_blank" rel="noopener">Universidad Complutense de Madrid</a>.
     </p>
+
+    <p class="cv-label" style="margin-top:1.4rem;">Supervisors</p>
+    <div class="supervisor-row">
+      <div class="supervisor-card">
+        <div class="s-name">David Mateos</div>
+        <div class="s-role">ICREA Professor · ICCUB, Universitat de Barcelona</div>
+        <div class="s-role" style="margin-top:0.3rem;color:#64748b;">Holography, strongly-coupled QCD, hydrodynamics</div>
+      </div>
+      <div class="supervisor-card">
+        <div class="s-name">Raúl Jiménez</div>
+        <div class="s-role">ICREA Professor · ICCUB, Universitat de Barcelona</div>
+        <div class="s-role" style="margin-top:0.3rem;color:#64748b;">Cosmology, dark energy, machine learning in physics</div>
+      </div>
+    </div>
   </section>
 
-  <!-- ── Research ────────────────────────────────────────────── -->
+  <!-- ── Research ───────────────────────────────────────────── -->
   <section id="research">
     <h2 class="section-title">Research interests</h2>
 
@@ -510,9 +513,9 @@
         <div class="icon">🔭</div>
         <h3>AdS/CFT &amp; Holography</h3>
         <p>
-          Using the AdS/CFT correspondence to study strongly-coupled quantum field theories
-          via their gravitational duals. Current work involves reconstructing bulk geometries
-          from boundary thermodynamic data.
+          Using the AdS/CFT correspondence to study strongly-coupled QFTs via their gravitational
+          duals. Current focus: reconstructing holographic bulk geometries from boundary
+          thermodynamic data with PINNs.
         </p>
       </div>
 
@@ -520,9 +523,29 @@
         <div class="icon">🧠</div>
         <h3>Physics-Informed Neural Networks</h3>
         <p>
-          Developing and improving PINN architectures for solving nonlinear and stiff
-          differential equations that arise in theoretical physics. Particular focus on
-          regularization strategies and solution-space embeddings.
+          Developing efficient PINN architectures for stiff, nonlinear PDEs in theoretical
+          physics — multi-head networks, unimodular solution-space regularization, and
+          embedding-based approaches.
+        </p>
+      </div>
+
+      <div class="research-card">
+        <div class="icon">🌌</div>
+        <h3>Phase Transitions in the Early Universe</h3>
+        <p>
+          Applying holographic methods to probe cosmological first-order phase transitions
+          relevant to baryogenesis and the gravitational-wave background, and to neutron
+          star merger equations of state.
+        </p>
+      </div>
+
+      <div class="research-card">
+        <div class="icon">🌊</div>
+        <h3>Turbulence &amp; Geometry of Flows</h3>
+        <p>
+          Studying turbulence and hydrodynamic instabilities through holography and the
+          geometry of flows. Active participant in the
+          Simons Collaboration on Geometry and Turbulence (IAS Princeton).
         </p>
       </div>
 
@@ -530,27 +553,8 @@
         <div class="icon">📐</div>
         <h3>Numerical Methods for Theoretical Physics</h3>
         <p>
-          Applying deep learning as a numerical tool to compute observables in holography,
-          GR, and cosmology — complementing or replacing traditional spectral and finite-difference methods.
-        </p>
-      </div>
-
-      <div class="research-card">
-        <div class="icon">🌌</div>
-        <h3>Black Holes &amp; Quantum Gravity</h3>
-        <p>
-          Probing quantum aspects of black holes through holography: complexity, chaos, the
-          butterfly effect, scrambling, and information-theoretic diagnostics such as
-          holographic complexity.
-        </p>
-      </div>
-
-      <div class="research-card">
-        <div class="icon">🌊</div>
-        <h3>Hydrodynamics &amp; QFT</h3>
-        <p>
-          Holographic and field-theoretic approaches to relativistic hydrodynamics,
-          including far-from-equilibrium dynamics and transport in strongly-coupled plasma.
+          Using deep learning as a numerical tool to compute observables in holography, GR,
+          and cosmology — complementing or replacing spectral and finite-difference methods.
         </p>
       </div>
 
@@ -558,14 +562,14 @@
         <div class="icon">🤖</div>
         <h3>AI for Scientific Discovery</h3>
         <p>
-          Building autonomous AI systems ("deep knowledge agents") capable of literature
-          synthesis and hypothesis generation across disciplines, as part of the Denario project.
+          Building autonomous AI systems capable of literature synthesis and hypothesis
+          generation across disciplines, as part of the Denario project.
         </p>
       </div>
     </div>
   </section>
 
-  <!-- ── Publications ─────────────────────────────────────────── -->
+  <!-- ── Publications ───────────────────────────────────────── -->
   <section id="publications">
     <h2 class="section-title">Selected publications</h2>
 
@@ -584,18 +588,19 @@
     <div class="pub-card">
       <div class="pub-year">2025 · Communications Physics (Nature)</div>
       <div class="pub-title">Efficient PINNs via multi-head unimodular regularization of the solutions space</div>
-      <div class="pub-authors"><strong>P. Tarancón-Álvarez</strong>, P. Tejerina-Pérez et al.</div>
-      <div class="pub-journal">Communications Physics, 2025 &nbsp;·&nbsp; <span class="cite-badge">5 citations</span></div>
+      <div class="pub-authors"><strong>P. Tarancón-Álvarez</strong>, P. Tejerina-Pérez, R. Jiménez, P. Protopapas</div>
+      <div class="pub-journal">Commun. Phys. <strong>8</strong>, 335 (2025) &nbsp;·&nbsp; <span class="cite-badge">5 citations</span></div>
       <div class="pub-links">
         <a class="pub-link" href="https://www.nature.com/articles/s42005-025-02248-1" target="_blank" rel="noopener">Journal</a>
         <a class="pub-link pdf" href="https://www.nature.com/articles/s42005-025-02248-1.pdf" target="_blank" rel="noopener">PDF</a>
+        <a class="pub-link" href="https://doi.org/10.1038/s42005-025-02191-3" target="_blank" rel="noopener">DOI</a>
       </div>
     </div>
 
     <div class="pub-card">
       <div class="pub-year">2025 · arXiv preprint</div>
       <div class="pub-title">The Denario project: Deep knowledge AI agents for scientific discovery</div>
-      <div class="pub-authors">S. Roy, D. N. Spergel, <strong>P. Tarancón-Álvarez</strong> et al.</div>
+      <div class="pub-authors">F. Villaescusa-Navarro, B. Bolliet, P. Villanueva-Domingo, …, <strong>P. Tarancón-Álvarez</strong> et al.</div>
       <div class="pub-journal">arXiv:2510.26887 &nbsp;·&nbsp; <span class="cite-badge">12 citations</span></div>
       <div class="pub-links">
         <a class="pub-link" href="https://arxiv.org/abs/2510.26887" target="_blank" rel="noopener">arXiv</a>
@@ -606,11 +611,12 @@
     <div class="pub-card">
       <div class="pub-year">2024 · JHEP</div>
       <div class="pub-title">Gravitational duals from equations of state</div>
-      <div class="pub-authors">S. Liu, P. Protopapas, <strong>P. Tarancón-Álvarez</strong> et al.</div>
-      <div class="pub-journal">Journal of High Energy Physics, 2024 &nbsp;·&nbsp; <span class="cite-badge">15 citations</span></div>
+      <div class="pub-authors">Y. Bea, R. Jiménez, D. Mateos, S. Liu, P. Protopapas, <strong>P. Tarancón-Álvarez</strong>, P. Tejerina-Pérez</div>
+      <div class="pub-journal">JHEP <strong>07</strong> (2024) 087 &nbsp;·&nbsp; <span class="cite-badge">15 citations</span></div>
       <div class="pub-links">
         <a class="pub-link" href="https://link.springer.com/article/10.1007/JHEP07(2024)087" target="_blank" rel="noopener">Journal</a>
         <a class="pub-link pdf" href="https://link.springer.com/content/pdf/10.1007/JHEP07(2024)087.pdf" target="_blank" rel="noopener">PDF</a>
+        <a class="pub-link" href="https://arxiv.org/abs/2403.14763" target="_blank" rel="noopener">arXiv</a>
       </div>
     </div>
 
@@ -622,28 +628,45 @@
     </p>
   </section>
 
-  <!-- ── CV ───────────────────────────────────────────────────── -->
+  <!-- ── CV ─────────────────────────────────────────────────── -->
   <section id="cv">
     <h2 class="section-title">Curriculum Vitae</h2>
 
-    <p class="cv-section-label">Education</p>
+    <p class="cv-label">Education</p>
     <div class="timeline">
+
       <div class="timeline-item">
         <div class="timeline-date">2023 – present</div>
-        <div class="timeline-role">PhD in Theoretical Physics</div>
+        <div class="timeline-role">PhD in Theoretical Physics and Cosmology</div>
         <div class="timeline-place">Institute of Cosmos Sciences (ICCUB) · Universitat de Barcelona</div>
         <div class="timeline-desc">
-          Research in holography, AdS/CFT, and machine-learning methods for theoretical physics.
-          Advisor at ICCUB.
+          Supervised by David Mateos and Raúl Jiménez. Applying the holographic principle
+          (AdS/CFT) to strong-coupling phenomena in astrophysics: phase transitions in the early
+          universe, neutron star mergers, and holographic turbulence.
+          Primary numerical tool: physics-informed neural networks (PINNs).<br>
+          Funded by an FPI fellowship, <em>Ministerio de Ciencia e Innovación</em>
+          (project: <em>Dark Energy and the Origin of the Universe</em>).
         </div>
       </div>
 
       <div class="timeline-item">
         <div class="timeline-date">2022 – 2023</div>
-        <div class="timeline-role">MSc in Theoretical Physics</div>
+        <div class="timeline-role">MSc in Theoretical Physics — Particle Physics &amp; Cosmology</div>
         <div class="timeline-place">Instituto de Física Teórica (IFT) · Universidad Autónoma de Madrid (UAM-CSIC)</div>
         <div class="timeline-desc">
-          Master's programme covering quantum field theory, string theory, gravity, and cosmology.
+          Advanced QFT, General Relativity, Quantum Gravity, String Theory, Advanced Mathematics.
+        </div>
+        <span class="timeline-grade">Grade: 9.33 / 10</span>
+        <div class="timeline-desc" style="margin-top:0.9rem;">
+          <strong style="color:var(--text); font-size:0.88rem;">Master's Thesis</strong> —
+          <em>Quantum Chaos in de Sitter Space and Centaur Geometries</em><br>
+          Supervisors: Juan F. Pedraza Avella &amp; Ayan Kumar Patra (IFT, UAM-CSIC)<br>
+          <span class="timeline-grade">Grade: 9.8 / 10</span><br>
+          <span style="font-size:0.83rem; color:#64748b; display:block; margin-top:0.3rem;">
+            Studied quantum chaos in a 2D gravity solution (Centaur geometry) interpolating between
+            a de Sitter interior and an AdS exterior. Chaos is diagnosed via out-of-time-ordered
+            correlators computed from spacelike geodesics anchored at the AdS₂ boundaries.
+          </span>
         </div>
       </div>
 
@@ -651,28 +674,115 @@
         <div class="timeline-date">2018 – 2022</div>
         <div class="timeline-role">BSc in Physics</div>
         <div class="timeline-place">Universidad Complutense de Madrid (UCM)</div>
-      </div>
-    </div>
-
-    <p class="cv-section-label">Research experience</p>
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-date">2023 – present</div>
-        <div class="timeline-role">PhD Researcher</div>
-        <div class="timeline-place">ICCUB · Universitat de Barcelona</div>
         <div class="timeline-desc">
-          Holographic reconstruction of bulk geometries using PINNs; efficient PINN architectures
-          for stiff PDEs; AI agents for scientific discovery (Denario project).
+          With honours in Algebra, Scientific Computing, Structure of Matter, Differential Geometry,
+          Observational Astronomy, Stellar Astrophysics, and Elementary Particles.
+          Second and third year (first semester) taught in English.
+        </div>
+        <span class="timeline-grade">Grade: 9.02 / 10</span>
+        <div class="timeline-desc" style="margin-top:0.9rem;">
+          <strong style="color:var(--text); font-size:0.88rem;">Bachelor's Thesis</strong> —
+          <em>Structural relations of remote galaxies from the CANDELS and 3D-HST catalogues</em><br>
+          Supervisor: Jesús Gallego Maestro (UCM)<br>
+          <span class="timeline-grade">Grade: 8.8 / 10</span><br>
+          <span style="font-size:0.83rem; color:#64748b; display:block; margin-top:0.3rem;">
+            Statistical analysis of structural parameters (size, mass, morphology) of galaxies at
+            redshifts 0.4–1.5 using the CANDELS and 3D-HST photometric and spectroscopic catalogues.
+          </span>
         </div>
       </div>
+
     </div>
 
-    <p class="cv-section-label">Skills &amp; tools</p>
+    <p class="cv-label">Research experience</p>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-date">2023 – present</div>
+        <div class="timeline-role">PhD Researcher (FPI Fellow)</div>
+        <div class="timeline-place">ICCUB · Universitat de Barcelona</div>
+        <div class="timeline-desc">
+          Holographic reconstruction of bulk geometries from thermodynamic data; efficient PINN
+          architectures for stiff PDEs; phase transitions in the early universe via AdS/CFT;
+          AI agents for scientific discovery (Denario project).
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">April – July 2024</div>
+        <div class="timeline-role">Visiting Researcher</div>
+        <div class="timeline-place">StellarDNN Lab · Harvard SEAS, Cambridge MA</div>
+        <div class="timeline-desc">
+          Research stay with Prof. Pavlos Protopapas. Applied physics-informed neural networks
+          to holography and cosmology problems, resulting in two publications.
+        </div>
+      </div>
+
+    </div>
+
+    <p class="cv-label">Schools, Workshops &amp; Collaborations</p>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-date">April – May 2025</div>
+        <div class="timeline-role">Simons Collaboration on Geometry and Turbulence</div>
+        <div class="timeline-place">Institute for Advanced Study (IAS), Princeton, NJ</div>
+        <div class="timeline-desc">
+          Invited participant in a workshop at the interface of differential geometry, fluid
+          dynamics, and holographic turbulence.
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">March 2024</div>
+        <div class="timeline-role">GGI School on Theoretical Aspects of Astroparticle Physics, Cosmology and Gravitation</div>
+        <div class="timeline-place">Galileo Galilei Institute, Florence — 60 hours</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">January 2024</div>
+        <div class="timeline-role">CERN Winter School on Supergravity, Strings and Gauge Theory</div>
+        <div class="timeline-place">CERN, Geneva</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">January 2024</div>
+        <div class="timeline-role">ComputeFest: Physics-Informed Neural Networks (PINNs)</div>
+        <div class="timeline-place">Online — 16 hours</div>
+      </div>
+
+    </div>
+
+    <p class="cv-label">Selected talks</p>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-date">March 2025</div>
+        <div class="timeline-role">"Gravitational duals from equations of state"</div>
+        <div class="timeline-place">Internal seminar, Physics Department, Florence</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">January 2025</div>
+        <div class="timeline-role">Gong show — Iberian Strings 2025</div>
+        <div class="timeline-place">Bizkaia Aretoa, Bilbao</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">October 2024</div>
+        <div class="timeline-role">"Gravitational duals from equations of state"</div>
+        <div class="timeline-place">Gran Sasso Science Institute, L'Aquila</div>
+      </div>
+
+    </div>
+
+    <p class="cv-label">Skills &amp; tools</p>
     <div class="card" style="padding:1.2rem 1.6rem;">
       <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
         <span class="badge">Python</span>
         <span class="badge">JAX / PyTorch</span>
         <span class="badge">Julia</span>
+        <span class="badge">Wolfram Mathematica</span>
         <span class="badge indigo">PINNs</span>
         <span class="badge indigo">Deep Learning</span>
         <span class="badge green">Differential Geometry</span>
@@ -680,6 +790,8 @@
         <span class="badge green">GR</span>
         <span class="badge">LaTeX</span>
         <span class="badge">Git</span>
+        <span class="badge">Spanish (native)</span>
+        <span class="badge">English (B2)</span>
       </div>
     </div>
 
@@ -688,7 +800,7 @@
     </p>
   </section>
 
-  <!-- ── Contact ──────────────────────────────────────────────── -->
+  <!-- ── Contact ────────────────────────────────────────────── -->
   <section id="contact">
     <h2 class="section-title">Contact</h2>
 
@@ -697,22 +809,18 @@
         <span class="label">Email</span>
         <a href="mailto:pedrota.tarancon@icc.ub.edu">pedrota.tarancon@icc.ub.edu</a>
       </div>
-
       <div class="contact-card">
         <span class="label">GitHub</span>
         <a href="https://github.com/pedrota2000" target="_blank" rel="noopener">github.com/pedrota2000</a>
       </div>
-
       <div class="contact-card">
         <span class="label">Google Scholar</span>
         <a href="https://scholar.google.com/citations?user=wixWUXEAAAAJ" target="_blank" rel="noopener">Scholar profile</a>
       </div>
-
       <div class="contact-card">
         <span class="label">arXiv</span>
         <a href="https://arxiv.org/search/?searchtype=author&query=Tarancon-Alvarez+P" target="_blank" rel="noopener">arXiv search</a>
       </div>
-
       <div class="contact-card">
         <span class="label">Institution</span>
         <a href="https://icc.ub.edu" target="_blank" rel="noopener">ICCUB · Universitat de Barcelona</a>
@@ -721,32 +829,39 @@
 
     <div class="card" style="margin-top:1.4rem;">
       <p style="color:var(--muted); font-size:0.9rem;">
-        I am always happy to discuss research, potential collaborations, or PhD-level
-        topics in holography, general relativity, and machine learning applied to theoretical physics.
-        The best way to reach me is by email.
+        Happy to discuss research, collaborations, or PhD-level topics in holography, PINNs,
+        early-universe cosmology, or turbulence. Best reached by email.
       </p>
     </div>
   </section>
 
 </main>
 
-<!-- ══ FOOTER ════════════════════════════════════════════════════ -->
+<!-- ══ FOOTER ═════════════════════════════════════════════════════ -->
 <footer>
   © 2026 Pedro Tarancón-Álvarez &nbsp;·&nbsp; ICCUB, Universitat de Barcelona
 </footer>
 
 <script>
-  const buttons  = document.querySelectorAll(".tab");
+  /* ── Tab switching ─────────────────────────────────────── */
+  const tabs     = document.querySelectorAll(".tab");
   const sections = document.querySelectorAll("main section");
 
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      buttons .forEach(b => b.classList.remove("active"));
-      sections.forEach(s => s.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById(btn.dataset.tab).classList.add("active");
-    });
-  });
+  function activateTab(id) {
+    tabs    .forEach(b => b.classList.toggle("active", b.dataset.tab === id));
+    sections.forEach(s => s.classList.toggle("active", s.id === id));
+  }
+
+  tabs.forEach(btn => btn.addEventListener("click", () => activateTab(btn.dataset.tab)));
+
+  /* ── Scroll: show compact nav when hero scrolls out ───── */
+  const hero       = document.getElementById("heroSection");
+  const compactNav = document.getElementById("compactNav");
+
+  new IntersectionObserver(
+    ([entry]) => compactNav.classList.toggle("visible", !entry.isIntersecting),
+    { threshold: 0.15 }
+  ).observe(hero);
 </script>
 
 </body>
