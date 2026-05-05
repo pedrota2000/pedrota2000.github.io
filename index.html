@@ -1311,23 +1311,58 @@
       [52,  211, 153],  // emerald
     ];
 
-    function spawnPerturb() {
+    // Convert canvas pixel coords to grid cell coords (at z=0)
+    function screenToGrid(px, py, W, H) {
+      const u = px - W / 2;
+      const v = py - (H / 2 + H * 0.06);
+      const wx = (u / ISO_AX + v / ISO_AY) / 2;
+      const wy = (v / ISO_AY - u / ISO_AX) / 2;
+      return {
+        col: wx / SPACING + COLS / 2,
+        row: wy / SPACING + ROWS / 2
+      };
+    }
+
+    function spawnPerturbAt(col, row) {
+      // Clamp to interior grid
+      const oc = Math.max(1.5, Math.min(COLS - 1.5, col));
+      const or = Math.max(1.5, Math.min(ROWS - 1.5, row));
       perturbs.push({
-        // Grid-space origin (in grid-cell units)
-        ox: 2 + Math.random() * (COLS - 4),
-        oy: 2 + Math.random() * (ROWS - 4),
+        ox: oc,
+        oy: or,
         t:  0,
-        speed:     1.8 + Math.random() * 1.4,   // cells/s
-        amplitude: 22  + Math.random() * 32,    // px Z displacement
-        sigma:     1.4 + Math.random() * 1.2,   // spatial width in cells
-        decay:     0.22 + Math.random() * 0.18, // temporal decay 1/s
+        speed:     1.8 + Math.random() * 1.4,
+        amplitude: 22  + Math.random() * 32,
+        sigma:     1.4 + Math.random() * 1.2,
+        decay:     0.22 + Math.random() * 0.18,
         tint:      Math.floor(Math.random() * TINTS.length)
       });
     }
 
-    spawnPerturb();
-    setTimeout(spawnPerturb, 800);
-    setInterval(spawnPerturb, 2800);
+    // Spawn one initial wave in the centre so the grid isn't flat on load
+    spawnPerturbAt(COLS / 2, ROWS / 2);
+
+    // Mouse tracking — listen on the hero section (canvas has pointer-events:none)
+    let lastSpawnTime = 0;
+    let lastMouseCol = -999, lastMouseRow = -999;
+    const SPAWN_INTERVAL = 200;  // ms between spawns
+    const MOVE_THRESHOLD = 1.0;  // grid cells of movement needed
+
+    const heroEl = document.getElementById('heroSection');
+    heroEl.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const { col, row } = screenToGrid(mx, my, canvas.width, canvas.height);
+      const now = performance.now();
+      const moved = Math.hypot(col - lastMouseCol, row - lastMouseRow);
+      if (now - lastSpawnTime > SPAWN_INTERVAL && moved > MOVE_THRESHOLD) {
+        spawnPerturbAt(col, row);
+        lastSpawnTime = now;
+        lastMouseCol  = col;
+        lastMouseRow  = row;
+      }
+    });
 
     // Project a (grid col, grid row, z) point to screen (px, py)
     // Grid centred on canvas
@@ -1345,6 +1380,11 @@
       };
     }
 
+    // Smooth fade-in: ramps from 0→1 over ~0.18s so waves don't pop abruptly
+    function fadeIn(t) {
+      return 1 - Math.exp(-t / 0.18);
+    }
+
     function gaussZ(p, col, row) {
       const dx = col - p.ox;
       const dy = row - p.oy;
@@ -1353,7 +1393,7 @@
       const ringDist  = dist - wavefront;
       const env   = Math.exp(-(ringDist * ringDist) / (2 * p.sigma * p.sigma));
       const damp  = Math.exp(-p.decay * p.t) * Math.exp(-dist * 0.06);
-      return env * damp * p.amplitude;
+      return env * damp * fadeIn(p.t) * p.amplitude;
     }
 
     function gaussColor(col, row, W, H) {
@@ -1366,7 +1406,7 @@
         const rd   = dist - wf;
         const env  = Math.exp(-(rd * rd) / (2 * p.sigma * p.sigma));
         const damp = Math.exp(-p.decay * p.t);
-        const w    = env * damp;
+        const w    = env * damp * fadeIn(p.t);
         const [r, g, b] = TINTS[p.tint];
         rA += r * w; gA += g * w; bA += b * w; wA += w;
       }
