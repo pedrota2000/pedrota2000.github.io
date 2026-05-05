@@ -106,6 +106,44 @@
       margin-bottom: 2rem;
       position: relative;
       z-index: 2;
+      animation: floatGlow 4s ease-in-out infinite;
+    }
+
+    /* Outer wave ring effect */
+    .hero-photo::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 50%;
+      animation: wavePulse 3s ease-out infinite;
+      pointer-events: none;
+    }
+
+    /* Pulsating glow and scale animation */
+    @keyframes floatGlow {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(56,189,248,0.25), 0 0 0 0px rgba(56,189,248,0.15), 0 0 60px rgba(56,189,248,0.3), 0 0 0 8px rgba(56,189,248,0.06);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(56,189,248,0.4), 0 0 0 12px rgba(56,189,248,0.08), 0 0 80px rgba(56,189,248,0.25), 0 0 0 12px rgba(56,189,248,0.04);
+        transform: scale(1.02);
+      }
+    }
+
+    /* Expanding wave ripple */
+    @keyframes wavePulse {
+      0% {
+        inset: -20px;
+        opacity: 1;
+        border-color: rgba(56, 189, 248, 0.4);
+      }
+      100% {
+        inset: -60px;
+        opacity: 0;
+        border-color: rgba(56, 189, 248, 0);
+      }
     }
 
     .hero-name {
