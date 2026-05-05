@@ -7,6 +7,8 @@
   <meta name="description" content="Pedro Tarancón-Álvarez — PhD researcher in theoretical physics at ICCUB, Universitat de Barcelona. AdS/CFT, holography, PINNs, turbulence, early-universe phase transitions.">
 
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
+
     :root {
       --bg0: #020617;
       --bg1: #0f172a;
@@ -19,12 +21,15 @@
       --card-bg: rgba(17, 24, 39, 0.80);
       --radius: 12px;
       --nav-h: 58px;
+      --shadow-soft: 0 10px 30px rgba(2, 6, 23, 0.28);
+      --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', Georgia, serif;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-family: var(--font-body);
       background: var(--bg0);
       color: var(--text);
       line-height: 1.7;
@@ -58,6 +63,27 @@
       padding: calc(var(--nav-h) + 3rem) 1.5rem 6rem;
       text-align: center;
       position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 12% 20%, rgba(56,189,248,0.2) 0%, rgba(56,189,248,0) 36%),
+        radial-gradient(circle at 85% 78%, rgba(129,140,248,0.18) 0%, rgba(129,140,248,0) 42%),
+        linear-gradient(145deg, rgba(7, 20, 44, 0.65) 0%, rgba(3, 10, 24, 0.2) 60%),
+        repeating-linear-gradient(
+          120deg,
+          rgba(148,163,184,0.06) 0px,
+          rgba(148,163,184,0.06) 1px,
+          transparent 1px,
+          transparent 18px
+        );
+      pointer-events: none;
+      opacity: 0.9;
+      z-index: 0;
     }
 
     .hero::after {
@@ -67,6 +93,7 @@
       height: 140px;
       background: linear-gradient(to bottom, transparent, var(--bg0));
       pointer-events: none;
+      z-index: 1;
     }
 
     .hero-photo {
@@ -77,21 +104,26 @@
       border: 2px solid var(--accent);
       box-shadow: 0 0 60px rgba(56,189,248,0.3), 0 0 0 8px rgba(56,189,248,0.06);
       margin-bottom: 2rem;
+      position: relative;
+      z-index: 2;
     }
 
     .hero-name {
       font-size: 2.8rem;
+      font-family: var(--font-display);
       font-weight: 700;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.2px;
       background: linear-gradient(100deg, #e2e8f0 30%, var(--accent) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       margin-bottom: 0.4rem;
+      position: relative;
+      z-index: 2;
     }
 
-    .hero-subtitle { font-size: 1.1rem; color: var(--muted); margin-bottom: 0.25rem; }
-    .hero-affil    { font-size: 0.95rem; color: #64748b; margin-bottom: 1.5rem; }
+    .hero-subtitle { font-size: 1.05rem; color: var(--muted); margin-bottom: 0.25rem; position: relative; z-index: 2; }
+    .hero-affil    { font-size: 0.92rem; color: #7d8da5; margin-bottom: 1.5rem; position: relative; z-index: 2; }
 
     .hero-badges {
       display: flex;
@@ -99,6 +131,8 @@
       gap: 0.5rem;
       justify-content: center;
       max-width: 640px;
+      position: relative;
+      z-index: 2;
     }
 
     .scroll-hint {
@@ -132,6 +166,7 @@
       background: rgba(4, 10, 22, 0.93);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
       display: flex;
       align-items: center;
       padding: 0 1.5rem;
@@ -170,25 +205,29 @@
       color: var(--muted);
       padding: 0 0.9rem;
       height: var(--nav-h);
-      font-size: 0.87rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       cursor: pointer;
       border-bottom: 2px solid transparent;
       white-space: nowrap;
-      transition: color 0.2s;
+      transition: color 0.2s, border-color 0.2s;
       font-family: inherit;
     }
 
     .nav-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
     .nav-tabs button:hover  { color: var(--text); }
+    .nav-tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 
     /* ── Main ─────────────────────────────────────────────────── */
     main {
-      max-width: 900px;
+      max-width: 980px;
       margin: 0 auto 5rem;
       padding: 2rem 1.5rem 0;
     }
 
-    section { display: none; animation: fadeUp 0.35s ease; }
+    section { display: none; animation: fadeUp 0.4s ease; }
     section.active { display: block; }
 
     @keyframes fadeUp {
@@ -225,22 +264,34 @@
       border-radius: var(--radius);
       padding: 1.6rem 1.8rem;
       margin-bottom: 1.2rem;
+      box-shadow: var(--shadow-soft);
     }
 
     .card p, .card li { color: var(--muted); font-size: 0.95rem; }
 
     .section-title {
-      font-size: 1.35rem;
+      font-size: 1.45rem;
       font-weight: 600;
       margin-bottom: 1.4rem;
       padding-bottom: 0.6rem;
       border-bottom: 1px solid var(--border);
       color: var(--text);
+      font-family: var(--font-display);
     }
 
     /* ── Bio ──────────────────────────────────────────────────── */
-    #bio .lead { font-size: 1.05rem; color: var(--text); margin-bottom: 1rem; }
-    #bio p     { color: var(--muted); margin-bottom: 0.8rem; }
+    #bio .lead {
+      font-size: 1.05rem;
+      color: var(--text);
+      margin-bottom: 1rem;
+      max-width: 76ch;
+    }
+
+    #bio p {
+      color: var(--muted);
+      margin-bottom: 0.8rem;
+      max-width: 76ch;
+    }
 
     .supervisor-row { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.6rem; }
 
@@ -269,7 +320,11 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1.3rem 1.5rem;
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.2s ease, border-color 0.2s ease;
     }
+
+    .research-card:hover { transform: translateY(-3px); border-color: rgba(56,189,248,0.35); }
 
     .research-card .icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
     .research-card h3    { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text); }
@@ -282,10 +337,11 @@
       border-radius: var(--radius);
       padding: 1.4rem 1.6rem;
       margin-bottom: 1rem;
-      transition: border-color 0.2s;
+      box-shadow: var(--shadow-soft);
+      transition: border-color 0.2s, transform 0.2s ease;
     }
 
-    .pub-card:hover { border-color: rgba(56,189,248,0.35); }
+    .pub-card:hover { border-color: rgba(56,189,248,0.35); transform: translateY(-2px); }
 
     .pub-year    { font-size: 0.78rem; color: var(--accent); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.3rem; }
     .pub-title   { font-size: 0.98rem; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; line-height: 1.45; }
@@ -312,6 +368,7 @@
     }
 
     .pub-link.pdf:hover { background: rgba(52,211,153,0.14); }
+    .pub-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     .cite-badge { font-size: 0.75rem; color: #64748b; }
 
@@ -393,21 +450,53 @@
       text-align: right;
     }
 
-    .contact-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.2rem 1.4rem;
+    .contact-email-card {
+      margin-bottom: 1.5rem;
       display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-      transition: border-color 0.2s;
+      align-items: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
     }
 
-    .contact-card:hover { border-color: rgba(56,189,248,0.35); }
-    .contact-card .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .contact-card a { font-size: 0.9rem; color: var(--text); word-break: break-all; }
-    .contact-card a:hover { color: var(--accent); }
+    .contact-email-main { flex: 1; min-width: 200px; }
+
+    .contact-email-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .contact-email-link {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    .contact-email-btn {
+      padding: 0.55rem 1.2rem;
+      border-radius: 8px;
+      background: rgba(56,189,248,0.1);
+      border: 1px solid rgba(56,189,248,0.3);
+      color: var(--accent);
+      font-size: 0.88rem;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .contact-email-btn:hover { background: rgba(56,189,248,0.18); text-decoration: none; }
+    .contact-email-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .contact-note {
+      font-size: 0.88rem;
+      color: #64748b;
+      line-height: 1.7;
+      max-width: 72ch;
+    }
+
+    .contact-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     /* ── Footer ───────────────────────────────────────────────── */
     footer {
@@ -423,6 +512,10 @@
       .hero-name { font-size: 2rem; }
       .hero-photo { width: 170px; height: 170px; }
       .nav-name { display: none; }
+      .hero-badges { gap: 0.4rem; }
+      .contact-row { flex-direction: column; align-items: flex-start; }
+      .contact-row-value { text-align: left; }
+      .contact-email-link { font-size: 0.95rem; }
     }
   </style>
 </head>
@@ -498,7 +591,7 @@
       I am also active in the study of
       <strong style="color:var(--text)">holographic turbulence and the geometry of flows</strong>,
       through my participation in the
-      <em>Simons Collaboration on Geometry and Turbulence</em> (IAS Princeton, 2025).
+      <em>Simons Collaboration on Geometry and Turbulence</em>.
       A broader theme across my work is bridging the analytic structure of theoretical physics
       with modern numerical and AI methods.
     </p>
@@ -552,8 +645,8 @@
         <h3>Turbulence &amp; Geometry of Flows</h3>
         <p>
           Studying turbulence and hydrodynamic instabilities through holography and the
-          geometry of flows. Active participant in the
-          Simons Collaboration on Geometry and Turbulence (IAS Princeton).
+          geometry of flows, including work connected to the
+          Simons Collaboration on Geometry and Turbulence.
         </p>
       </div>
 
@@ -746,16 +839,6 @@
     <div class="timeline">
 
       <div class="timeline-item">
-        <div class="timeline-date">April – May 2025</div>
-        <div class="timeline-role">Simons Collaboration on Geometry and Turbulence</div>
-        <div class="timeline-place">Institute for Advanced Study (IAS), Princeton, NJ</div>
-        <div class="timeline-desc">
-          Invited participant in a workshop at the interface of differential geometry, fluid
-          dynamics, and holographic turbulence.
-        </div>
-      </div>
-
-      <div class="timeline-item">
         <div class="timeline-date">March 2024</div>
         <div class="timeline-role">GGI School on Theoretical Aspects of Astroparticle Physics, Cosmology and Gravitation</div>
         <div class="timeline-place">Galileo Galilei Institute, Florence — 60 hours</div>
@@ -827,15 +910,12 @@
     <h2 class="section-title">Contact</h2>
 
     <!-- Primary email block -->
-    <div class="card" style="margin-bottom:1.5rem; display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap;">
-      <div style="flex:1; min-width:200px;">
-        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); margin-bottom:0.3rem;">Email</div>
-        <a href="mailto:pedrota.tarancon@icc.ub.edu" style="font-size:1.05rem; font-weight:600; color:var(--text);">pedrota.tarancon@icc.ub.edu</a>
+    <div class="card contact-email-card">
+      <div class="contact-email-main">
+        <div class="contact-email-label">Email</div>
+        <a class="contact-email-link" href="mailto:pedrota.tarancon@icc.ub.edu">pedrota.tarancon@icc.ub.edu</a>
       </div>
-      <a href="mailto:pedrota.tarancon@icc.ub.edu"
-         style="padding:0.55rem 1.2rem; border-radius:8px; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); color:var(--accent); font-size:0.88rem; white-space:nowrap;">
-        Send email
-      </a>
+      <a class="contact-email-btn" href="mailto:pedrota.tarancon@icc.ub.edu">Send email</a>
     </div>
 
     <!-- Link list -->
@@ -863,7 +943,7 @@
 
     </div>
 
-    <p style="font-size:0.88rem; color:#64748b; line-height:1.7;">
+    <p class="contact-note">
       Happy to discuss research, collaborations, or PhD-level topics in holography, PINNs,
       early-universe cosmology, or turbulence.
     </p>
