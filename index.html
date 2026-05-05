@@ -32,8 +32,10 @@
       font-family: var(--font-body);
       background: var(--bg0);
       color: var(--text);
-      line-height: 1.7;
+      line-height: 1.75;
+      font-size: 17px;
       min-height: 100vh;
+      scroll-behavior: smooth;
     }
 
     body::before {
@@ -66,24 +68,14 @@
       overflow: hidden;
     }
 
-    .hero::before {
-      content: '';
+    /* Spacetime canvas behind everything */
+    #spacetime-canvas {
       position: absolute;
       inset: 0;
-      background:
-        radial-gradient(circle at 12% 20%, rgba(56,189,248,0.2) 0%, rgba(56,189,248,0) 36%),
-        radial-gradient(circle at 85% 78%, rgba(129,140,248,0.18) 0%, rgba(129,140,248,0) 42%),
-        linear-gradient(145deg, rgba(7, 20, 44, 0.65) 0%, rgba(3, 10, 24, 0.2) 60%),
-        repeating-linear-gradient(
-          120deg,
-          rgba(148,163,184,0.06) 0px,
-          rgba(148,163,184,0.06) 1px,
-          transparent 1px,
-          transparent 18px
-        );
-      pointer-events: none;
-      opacity: 0.9;
+      width: 100%;
+      height: 100%;
       z-index: 0;
+      pointer-events: none;
     }
 
     .hero::after {
@@ -96,6 +88,15 @@
       z-index: 1;
     }
 
+    /* Profile photo wrapper */
+    .hero-photo-wrap {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin-bottom: 2rem;
+      z-index: 2;
+    }
+
     .hero-photo {
       width: 220px;
       height: 220px;
@@ -103,121 +104,21 @@
       border-radius: 50%;
       border: 2px solid var(--accent);
       box-shadow: 0 0 60px rgba(56,189,248,0.3), 0 0 0 8px rgba(56,189,248,0.06);
-      margin-bottom: 2rem;
       position: relative;
       z-index: 2;
+      display: block;
     }
 
-    /* Wave blob container */
-    .wave-blobs {
+    /* Canvas for gaussian wavelets */
+    #wavelet-canvas {
       position: absolute;
-      width: 280px;
-      height: 280px;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 1;
+      width: 600px;
+      height: 600px;
       pointer-events: none;
-    }
-
-    /* Individual wave blob animations with staggered timing */
-    .wave-blob {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      top: 50%;
-      left: 50%;
-      margin: -6px 0 0 -6px;
-      filter: blur(0.5px);
-      opacity: 0.7;
-    }
-
-    /* Blob positions and animations */
-    .blob-1 {
-      width: 14px;
-      height: 14px;
-      margin: -7px 0 0 -7px;
-      background: rgba(56, 189, 248, 0.7);
-      animation: orbitBlob 5.2s ease-in-out infinite;
-    }
-
-    .blob-2 {
-      width: 10px;
-      height: 10px;
-      margin: -5px 0 0 -5px;
-      background: rgba(129, 140, 248, 0.65);
-      animation: orbitBlob 4.8s ease-in-out 0.3s infinite;
-    }
-
-    .blob-3 {
-      width: 12px;
-      height: 12px;
-      margin: -6px 0 0 -6px;
-      background: rgba(52, 211, 153, 0.6);
-      animation: orbitBlob 6.1s ease-in-out 0.6s infinite;
-    }
-
-    .blob-4 {
-      width: 11px;
-      height: 11px;
-      margin: -5.5px 0 0 -5.5px;
-      background: rgba(56, 189, 248, 0.65);
-      animation: orbitBlob 5.5s ease-in-out 0.9s infinite;
-    }
-
-    .blob-5 {
-      width: 13px;
-      height: 13px;
-      margin: -6.5px 0 0 -6.5px;
-      background: rgba(129, 140, 248, 0.6);
-      animation: orbitBlob 4.7s ease-in-out 1.2s infinite;
-    }
-
-    .blob-6 {
-      width: 9px;
-      height: 9px;
-      margin: -4.5px 0 0 -4.5px;
-      background: rgba(52, 211, 153, 0.65);
-      animation: orbitBlob 5.9s ease-in-out 1.5s infinite;
-    }
-
-    .blob-7 {
-      width: 12px;
-      height: 12px;
-      margin: -6px 0 0 -6px;
-      background: rgba(56, 189, 248, 0.6);
-      animation: orbitBlob 5.3s ease-in-out 1.8s infinite;
-    }
-
-    .blob-8 {
-      width: 10px;
-      height: 10px;
-      margin: -5px 0 0 -5px;
-      background: rgba(129, 140, 248, 0.7);
-      animation: orbitBlob 6.2s ease-in-out 0.15s infinite;
-    }
-
-    /* Orbital animation with diffusing effect */
-    @keyframes orbitBlob {
-      0% {
-        transform: rotate(0deg) translateY(-100px) scale(1);
-        opacity: 0;
-        filter: blur(3px);
-      }
-      10% {
-        opacity: 0.7;
-        filter: blur(0.5px);
-      }
-      85% {
-        opacity: 0.7;
-        filter: blur(0.5px);
-      }
-      100% {
-        transform: rotate(360deg) translateY(-100px) scale(0.3);
-        opacity: 0;
-        filter: blur(4px);
-      }
+      z-index: 1;
     }
 
     .hero-name {
@@ -249,24 +150,62 @@
 
     .scroll-hint {
       position: absolute;
-      bottom: 2rem;
+      bottom: 1.6rem;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      flex-direction: column;
       align-items: center;
-      color: #334155;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      animation: bounce 2s infinite;
+      gap: 0.6rem;
+      color: #dbeafe;
+      font-size: 0.84rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.64rem 1.28rem;
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      border-radius: 999px;
+      background: rgba(2, 6, 23, 0.5);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.14) inset;
+      animation: cuePulse 1.9s ease-in-out infinite;
       z-index: 2;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
     }
 
-    .scroll-hint svg { width: 18px; height: 18px; stroke: #334155; margin-top: 0.2rem; }
+    .scroll-hint:hover {
+      color: #e2e8f0;
+      border-color: rgba(125, 211, 252, 0.95);
+      background: rgba(2, 6, 23, 0.72);
+      text-decoration: none;
+    }
 
-    @keyframes bounce {
-      0%,100% { transform: translateX(-50%) translateY(0); }
-      50%      { transform: translateX(-50%) translateY(6px); }
+    .scroll-hint:focus-visible {
+      outline: 2px solid rgba(125, 211, 252, 0.95);
+      outline-offset: 3px;
+    }
+
+    .scroll-hint svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--accent);
+      animation: cueArrow 1.3s ease-in-out infinite;
+    }
+
+    @keyframes cueArrow {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(4px); }
+    }
+
+    @keyframes cuePulse {
+      0%, 100% {
+        border-color: rgba(56, 189, 248, 0.45);
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.12) inset;
+      }
+      50% {
+        border-color: rgba(125, 211, 252, 0.85);
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.26), 0 0 0 1px rgba(56, 189, 248, 0.2) inset;
+      }
     }
 
     /* ── Compact sticky nav ───────────────────────────────────── */
@@ -283,6 +222,13 @@
       align-items: center;
       padding: 0 1.5rem;
       gap: 0.8rem;
+      transition: opacity 0.32s ease, transform 0.32s ease;
+    }
+
+    .compact-nav.is-hidden {
+      opacity: 0;
+      transform: translateY(-100%);
+      pointer-events: none;
     }
 
     .nav-photo {
@@ -317,7 +263,7 @@
       color: var(--muted);
       padding: 0 0.9rem;
       height: var(--nav-h);
-      font-size: 0.8rem;
+      font-size: 0.86rem;
       font-weight: 600;
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -334,13 +280,78 @@
 
     /* ── Main ─────────────────────────────────────────────────── */
     main {
-      max-width: 980px;
-      margin: 0 auto 5rem;
-      padding: 2rem 1.5rem 0;
+      width: 100%;
+      margin: 0 0 5rem;
+      padding: 2rem 0 0;
     }
 
-    section { display: none; animation: fadeUp 0.4s ease; }
-    section.active { display: block; }
+    main section {
+      display: block;
+      position: relative;
+      margin-bottom: 0;
+      padding: 4.5rem 1.2rem 4rem;
+      border-top: 1px solid rgba(56, 189, 248, 0.12);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.9);
+      scroll-margin-top: calc(var(--nav-h) + 20px);
+      overflow: clip;
+      animation: fadeUp 0.42s ease;
+      isolation: isolate;
+    }
+
+    main section > * {
+      width: min(1120px, 100%);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    main section:nth-of-type(odd) {
+      background:
+        linear-gradient(150deg, rgba(8, 16, 34, 0.62) 0%, rgba(3, 10, 24, 0.38) 100%),
+        repeating-linear-gradient(
+          122deg,
+          rgba(148, 163, 184, 0.024) 0px,
+          rgba(148, 163, 184, 0.024) 1px,
+          transparent 1px,
+          transparent 20px
+        );
+    }
+
+    main section:nth-of-type(even) {
+      background:
+        linear-gradient(155deg, rgba(7, 18, 38, 0.56) 0%, rgba(8, 10, 24, 0.24) 100%),
+        repeating-linear-gradient(
+          -125deg,
+          rgba(129, 140, 248, 0.022) 0px,
+          rgba(129, 140, 248, 0.022) 1px,
+          transparent 1px,
+          transparent 22px
+        );
+    }
+
+    main section::after {
+      content: '';
+      position: absolute;
+      left: max(1rem, calc((100% - 1120px) / 2));
+      right: max(1rem, calc((100% - 1120px) / 2));
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(56, 189, 248, 0.38), rgba(129, 140, 248, 0.38), transparent);
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px) scale(0.992);
+      filter: blur(5px);
+      transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(8px); }
@@ -371,38 +382,46 @@
     }
 
     .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.6rem 1.8rem;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.35));
+      border: 1px solid rgba(56, 189, 248, 0.14);
+      border-left: 2px solid rgba(56, 189, 248, 0.46);
+      border-radius: 6px;
+      padding: 1.4rem 1.4rem;
       margin-bottom: 1.2rem;
-      box-shadow: var(--shadow-soft);
+      box-shadow: none;
     }
 
     .card p, .card li { color: var(--muted); font-size: 0.95rem; }
 
     .section-title {
-      font-size: 1.45rem;
-      font-weight: 600;
-      margin-bottom: 1.4rem;
-      padding-bottom: 0.6rem;
-      border-bottom: 1px solid var(--border);
+      font-size: clamp(1.85rem, 2.5vw, 2.2rem);
+      font-weight: 700;
+      margin-bottom: 1.8rem;
+      padding: 0 0 0.9rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
       color: var(--text);
       font-family: var(--font-display);
+      position: relative;
+      letter-spacing: 0.01em;
+    }
+
+    .section-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 112px;
+      height: 3px;
+      background: linear-gradient(to right, var(--accent), rgba(129, 140, 248, 0.55));
+      border-radius: 999px;
     }
 
     /* ── Bio ──────────────────────────────────────────────────── */
-    #bio .lead {
-      font-size: 1.05rem;
-      color: var(--text);
-      margin-bottom: 1rem;
-      max-width: 76ch;
-    }
-
     #bio p {
       color: var(--muted);
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.95rem;
       max-width: 76ch;
+      font-size: 1rem;
     }
 
     .supervisor-row { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.6rem; }
@@ -422,43 +441,45 @@
     /* ── Research ─────────────────────────────────────────────── */
     .research-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
       margin-bottom: 1.8rem;
     }
 
     .research-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: linear-gradient(130deg, rgba(15, 23, 42, 0.68), rgba(15, 23, 42, 0.38));
+      border: 1px solid rgba(56, 189, 248, 0.14);
+      border-left: 2px solid rgba(56, 189, 248, 0.42);
+      border-radius: 6px;
       padding: 1.3rem 1.5rem;
-      box-shadow: var(--shadow-soft);
+      box-shadow: none;
       transition: transform 0.2s ease, border-color 0.2s ease;
     }
 
     .research-card:hover { transform: translateY(-3px); border-color: rgba(56,189,248,0.35); }
 
     .research-card .icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
-    .research-card h3    { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text); }
-    .research-card p     { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .research-card h3    { font-size: 1.04rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text); }
+    .research-card p     { font-size: 0.93rem; color: var(--muted); line-height: 1.65; }
 
     /* ── Publications ─────────────────────────────────────────── */
     .pub-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: linear-gradient(130deg, rgba(15, 23, 42, 0.68), rgba(15, 23, 42, 0.38));
+      border: 1px solid rgba(56, 189, 248, 0.14);
+      border-left: 2px solid rgba(129, 140, 248, 0.4);
+      border-radius: 6px;
       padding: 1.4rem 1.6rem;
       margin-bottom: 1rem;
-      box-shadow: var(--shadow-soft);
+      box-shadow: none;
       transition: border-color 0.2s, transform 0.2s ease;
     }
 
     .pub-card:hover { border-color: rgba(56,189,248,0.35); transform: translateY(-2px); }
 
-    .pub-year    { font-size: 0.78rem; color: var(--accent); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.3rem; }
-    .pub-title   { font-size: 0.98rem; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; line-height: 1.45; }
-    .pub-authors { font-size: 0.84rem; color: var(--muted); margin-bottom: 0.4rem; }
-    .pub-journal { font-size: 0.83rem; color: #64748b; margin-bottom: 0.6rem; font-style: italic; }
+    .pub-year    { font-size: 0.84rem; color: var(--accent); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.34rem; }
+    .pub-title   { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 0.34rem; line-height: 1.5; }
+    .pub-authors { font-size: 0.92rem; color: var(--muted); margin-bottom: 0.45rem; }
+    .pub-journal { font-size: 0.9rem; color: #64748b; margin-bottom: 0.65rem; font-style: italic; }
     .pub-links   { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
 
     .pub-link {
@@ -484,6 +505,23 @@
 
     .cite-badge { font-size: 0.75rem; color: #64748b; }
 
+    .pub-intro {
+      margin: 1.25rem auto 0.25rem;
+      padding: 0.85rem 1rem;
+      border: 1px solid rgba(129, 140, 248, 0.35);
+      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.26);
+      font-size: 0.96rem;
+      color: var(--muted);
+      text-align: center;
+      width: min(840px, 100%);
+    }
+
+    .pub-intro a {
+      color: #bfdbfe;
+      font-weight: 600;
+    }
+
     /* ── CV timeline ──────────────────────────────────────────── */
     .timeline { position: relative; padding-left: 1.5rem; }
 
@@ -508,10 +546,10 @@
       transform: translateX(-3.5px);
     }
 
-    .timeline-date  { font-size: 0.8rem; color: var(--accent); font-weight: 600; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
-    .timeline-role  { font-size: 0.97rem; font-weight: 600; color: var(--text); }
-    .timeline-place { font-size: 0.88rem; color: var(--muted); margin-top: 0.1rem; }
-    .timeline-desc  { font-size: 0.85rem; color: #64748b; margin-top: 0.4rem; line-height: 1.6; }
+    .timeline-date  { font-size: 0.86rem; color: var(--accent); font-weight: 600; letter-spacing: 0.04em; margin-bottom: 0.22rem; }
+    .timeline-role  { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+    .timeline-place { font-size: 0.96rem; color: var(--muted); margin-top: 0.12rem; }
+    .timeline-desc  { font-size: 0.94rem; color: #64748b; margin-top: 0.45rem; line-height: 1.68; }
 
     .timeline-grade {
       display: inline-block;
@@ -525,12 +563,30 @@
     }
 
     .cv-label {
-      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      width: min(1120px, 100%);
+      margin: 2rem auto 1rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.14em;
       color: var(--muted);
-      margin: 1.8rem 0 0.8rem;
       font-weight: 600;
+      text-align: center;
+    }
+
+    .cv-label::before,
+    .cv-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(56, 189, 248, 0.32));
+    }
+
+    .cv-label::after {
+      background: linear-gradient(to left, transparent, rgba(56, 189, 248, 0.32));
     }
 
     /* ── Contact ──────────────────────────────────────────────── */
@@ -539,9 +595,10 @@
       align-items: center;
       justify-content: space-between;
       padding: 0.75rem 1rem;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      background: linear-gradient(130deg, rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.35));
+      border: 1px solid rgba(56, 189, 248, 0.14);
+      border-left: 2px solid rgba(52, 211, 153, 0.42);
+      border-radius: 6px;
       text-decoration: none;
       transition: border-color 0.2s;
       gap: 1rem;
@@ -550,14 +607,14 @@
     .contact-row:hover { border-color: rgba(56,189,248,0.35); text-decoration: none; }
 
     .contact-row-label {
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       font-weight: 600;
       color: var(--muted);
       min-width: 110px;
     }
 
     .contact-row-value {
-      font-size: 0.88rem;
+      font-size: 0.95rem;
       color: var(--accent);
       text-align: right;
     }
@@ -602,7 +659,7 @@
     .contact-email-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     .contact-note {
-      font-size: 0.88rem;
+      font-size: 0.96rem;
       color: #64748b;
       line-height: 1.7;
       max-width: 72ch;
@@ -621,10 +678,40 @@
 
     /* ── Responsive ───────────────────────────────────────────── */
     @media (max-width: 600px) {
+      body { font-size: 16px; }
       .hero-name { font-size: 2rem; }
+      .hero-photo-wrap { width: 170px; height: 170px; }
       .hero-photo { width: 170px; height: 170px; }
+      #wavelet-canvas { width: 420px; height: 420px; }
       .nav-name { display: none; }
       .hero-badges { gap: 0.4rem; }
+      .scroll-hint {
+        bottom: 1.2rem;
+        font-size: 0.72rem;
+        padding: 0.5rem 1rem;
+      }
+      .scroll-hint svg {
+        width: 16px;
+        height: 16px;
+      }
+      main section {
+        padding: 2.4rem 1rem 2.2rem;
+      }
+      .section-title {
+        font-size: 1.5rem;
+        padding-bottom: 0.75rem;
+      }
+      .section-title::before {
+        width: 84px;
+      }
+      .cv-label {
+        gap: 0.45rem;
+        letter-spacing: 0.11em;
+      }
+      main section::after {
+        left: 1rem;
+        right: 1rem;
+      }
       .contact-row { flex-direction: column; align-items: flex-start; }
       .contact-row-value { text-align: left; }
       .contact-email-link { font-size: 0.95rem; }
@@ -636,17 +723,15 @@
 
 <!-- ══ HERO ═══════════════════════════════════════════════════════ -->
 <section class="hero" id="heroSection">
-  <div class="wave-blobs">
-    <div class="wave-blob blob-1"></div>
-    <div class="wave-blob blob-2"></div>
-    <div class="wave-blob blob-3"></div>
-    <div class="wave-blob blob-4"></div>
-    <div class="wave-blob blob-5"></div>
-    <div class="wave-blob blob-6"></div>
-    <div class="wave-blob blob-7"></div>
-    <div class="wave-blob blob-8"></div>
+  <!-- Spacetime grid background -->
+  <canvas id="spacetime-canvas"></canvas>
+
+  <div class="hero-photo-wrap">
+    <!-- Gaussian wavelet canvas -->
+    <canvas id="wavelet-canvas"></canvas>
+    <img src="profile.jpg" alt="Pedro Tarancón-Álvarez" class="hero-photo">
   </div>
-  <img src="profile.jpg" alt="Pedro Tarancón-Álvarez" class="hero-photo">
+
   <h1 class="hero-name">Pedro Tarancón-Álvarez</h1>
   <p class="hero-subtitle">PhD Researcher in Theoretical Physics</p>
   <p class="hero-affil">Institute of Cosmos Sciences (ICCUB) · Universitat de Barcelona</p>
@@ -659,12 +744,12 @@
     <span class="badge green">Cosmology</span>
     <span class="badge green">Turbulence</span>
   </div>
-  <div class="scroll-hint">
-    SCROLL
+  <a class="scroll-hint" href="#bio" aria-label="Scroll to About section">
+    About
     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 5v14M5 12l7 7 7-7"/>
     </svg>
-  </div>
+  </a>
 </section>
 
 <!-- ══ COMPACT STICKY NAV ═════════════════════════════════════════ -->
@@ -672,11 +757,11 @@
   <img src="profile.jpg" alt="" class="nav-photo">
   <span class="nav-name">Pedro Tarancón-Álvarez</span>
   <div class="nav-tabs">
-    <button class="tab active" data-tab="bio">About</button>
-    <button class="tab" data-tab="research">Research</button>
-    <button class="tab" data-tab="publications">Publications</button>
-    <button class="tab" data-tab="cv">CV</button>
-    <button class="tab" data-tab="contact">Contact</button>
+    <button class="tab active" data-target="bio">About</button>
+    <button class="tab" data-target="research">Research</button>
+    <button class="tab" data-target="publications">Publications</button>
+    <button class="tab" data-target="cv">CV</button>
+    <button class="tab" data-target="contact">Contact</button>
   </div>
 </nav>
 
@@ -684,30 +769,30 @@
 <main>
 
   <!-- ── About ──────────────────────────────────────────────── -->
-  <section id="bio" class="active">
+  <section id="bio" class="reveal is-visible">
     <h2 class="section-title">About me</h2>
 
-    <p class="lead">
+    <p>
       I am a PhD student in theoretical physics at the
       <a href="https://icc.ub.edu" target="_blank" rel="noopener">Institute of Cosmos Sciences (ICCUB)</a>,
       Universitat de Barcelona, funded by an
-      <strong style="color:var(--text)">FPI fellowship</strong> (Ministerio de Ciencia e Innovación)
+      FPI fellowship (Ministerio de Ciencia e Innovación)
       as part of the project <em>Dark Energy and the Origin of the Universe</em>.
     </p>
 
     <p>
       My research program focuses on
-      <strong style="color:var(--text)">hydrodynamics from a holographic perspective</strong>:
+      hydrodynamics from a holographic perspective:
       from transport and far-from-equilibrium dynamics to
-      <strong style="color:var(--text)">phase transitions in the early universe</strong>
-      and <strong style="color:var(--text)">turbulence</strong>. I am interested in how AdS/CFT can provide
+      phase transitions in the early universe
+      and turbulence. I am interested in how AdS/CFT can provide
       quantitative and conceptual tools to understand fluid phenomena in regimes where standard
       perturbative methods are limited.
     </p>
 
     <p>
       A central theme in my work is the interface between
-      <strong style="color:var(--text)">general relativity</strong>, quantum field theory, and fluid dynamics.
+      general relativity, quantum field theory, and fluid dynamics.
       In practice, I study reconstruction and inversion problems where gravitational dual geometries
       are inferred from boundary observables, with emphasis on nonlinear behavior and physically
       interpretable effective descriptions.
@@ -715,7 +800,7 @@
 
     <p>
       Methodologically, I combine analytic approaches with
-      <strong style="color:var(--text)">numerical methods and machine learning techniques</strong>,
+      numerical methods and machine learning techniques,
       especially physics-informed neural networks (PINNs), to solve stiff nonlinear systems that
       appear in holography and relativistic physics. My goal is to build models that are both
       numerically robust and faithful to the underlying physics.
@@ -731,7 +816,7 @@
   </section>
 
   <!-- ── Research ───────────────────────────────────────────── -->
-  <section id="research">
+  <section id="research" class="reveal">
     <h2 class="section-title">Research interests</h2>
 
     <div class="research-grid">
@@ -796,7 +881,7 @@
   </section>
 
   <!-- ── Publications ───────────────────────────────────────── -->
-  <section id="publications">
+  <section id="publications" class="reveal">
     <h2 class="section-title">Selected publications</h2>
 
     <div class="pub-card">
@@ -846,24 +931,18 @@
       </div>
     </div>
 
-    <p style="margin-top:1rem; font-size:0.88rem; color:var(--muted);">
-      Full list on
-      <a href="https://scholar.google.com/citations?user=wixWUXEAAAAJ" target="_blank" rel="noopener">Google Scholar</a>
-      and
+    <p class="pub-intro">
+      Full list and citation tracking:
+      <a href="https://scholar.google.com/citations?user=wixWUXEAAAAJ" target="_blank" rel="noopener">Google Scholar</a> ·
+      <a href="https://inspirehep.net/authors/2771633" target="_blank" rel="noopener">INSPIRE-HEP</a> ·
+      <a href="https://orcid.org/0009-0004-5774-231X" target="_blank" rel="noopener">ORCID</a> ·
       <a href="https://arxiv.org/search/?searchtype=author&query=Tarancon-Alvarez+P" target="_blank" rel="noopener">arXiv</a>.
     </p>
   </section>
 
   <!-- ── CV ─────────────────────────────────────────────────── -->
-  <section id="cv">
+  <section id="cv" class="reveal">
     <h2 class="section-title">Curriculum Vitae</h2>
-
-    <p style="margin:0.2rem 0 1rem; font-size:0.88rem; color:var(--muted);">
-      Profiles:
-      <a href="https://scholar.google.com/citations?user=wixWUXEAAAAJ" target="_blank" rel="noopener">Google Scholar</a>
-      ·
-      <a href="https://arxiv.org/search/?searchtype=author&query=Tarancon-Alvarez+P" target="_blank" rel="noopener">arXiv</a>
-    </p>
 
     <p class="cv-label">PhD supervision</p>
     <div class="supervisor-row" style="margin-bottom:1.2rem;">
@@ -1038,10 +1117,9 @@
   </section>
 
   <!-- ── Contact ────────────────────────────────────────────── -->
-  <section id="contact">
+  <section id="contact" class="reveal">
     <h2 class="section-title">Contact</h2>
 
-    <!-- Primary email block -->
     <div class="card contact-email-card">
       <div class="contact-email-main">
         <div class="contact-email-label">Email</div>
@@ -1050,7 +1128,6 @@
       <a class="contact-email-btn" href="mailto:pedrota.tarancon@icc.ub.edu">Send email</a>
     </div>
 
-    <!-- Link list -->
     <div style="display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1.5rem;">
 
       <a href="https://scholar.google.com/citations?user=wixWUXEAAAAJ" target="_blank" rel="noopener" class="contact-row">
@@ -1089,18 +1166,444 @@
 </footer>
 
 <script>
-  /* ── Tab switching ─────────────────────────────────────── */
-  const tabs     = document.querySelectorAll(".tab");
-  const sections = document.querySelectorAll("main section");
+  /* ── One-page navigation + reveal on scroll ─────────────── */
+  const tabs = document.querySelectorAll('.tab');
+  const sections = document.querySelectorAll('main section');
+  const compactNav = document.getElementById('compactNav');
+  const heroSection = document.getElementById('heroSection');
+  const heroAboutBtn = document.querySelector('.scroll-hint[href="#bio"]');
 
-  function activateTab(id) {
-    tabs    .forEach(b => b.classList.toggle("active", b.dataset.tab === id));
-    sections.forEach(s => s.classList.toggle("active", s.id === id));
+  function easeInOutCubic(t) {
+    return t < 0.5
+      ? 4 * t * t * t
+      : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
 
-  tabs.forEach(btn => btn.addEventListener("click", () => activateTab(btn.dataset.tab)));
+  function smoothScrollToSection(target, duration = 900) {
+    const navHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 58;
+    const startY = window.scrollY;
+    const endY = Math.max(0, target.getBoundingClientRect().top + window.scrollY - navHeight - 12);
+    const distance = endY - startY;
+    if (Math.abs(distance) < 2) return;
+
+    const startTime = performance.now();
+
+    function step(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeInOutCubic(progress);
+      window.scrollTo(0, startY + distance * eased);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  tabs.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.target;
+      const target = document.getElementById(id);
+      if (!target) return;
+      smoothScrollToSection(target, 860);
+    });
+  });
+
+  if (heroAboutBtn) {
+    heroAboutBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      const target = document.getElementById('bio');
+      if (!target) return;
+      smoothScrollToSection(target, 960);
+    });
+  }
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+      }
+    });
+  }, { threshold: 0.18, rootMargin: '0px 0px -10% 0px' });
+
+  sections.forEach((section) => sectionObserver.observe(section));
+
+  function updateActiveTabByScroll() {
+    const navH = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'));
+    let activeSectionId = sections[0]?.id;
+
+    for (const section of sections) {
+      // rect.bottom is viewport-relative; section stays active until its
+      // bottom edge scrolls past the nav bar (fully off screen above).
+      const rect = section.getBoundingClientRect();
+      if (rect.bottom > navH) {
+        activeSectionId = section.id;
+        break;
+      }
+    }
+
+    tabs.forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.target === activeSectionId);
+    });
+  }
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    window.requestAnimationFrame(() => {
+      updateActiveTabByScroll();
+      ticking = false;
+    });
+    ticking = true;
+  });
+
+  window.addEventListener('resize', updateActiveTabByScroll);
+  updateActiveTabByScroll();
+
+  const heroObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      compactNav.classList.toggle('is-hidden', entry.isIntersecting);
+    });
+  }, { threshold: 0.55 });
+
+  heroObserver.observe(heroSection);
 
 
+  /* ══════════════════════════════════════════════════════════
+     ISOMETRIC SPACETIME GRID — 2D SLICE VIEWED IN 3D
+     Grid lives in XY plane; perturbations displace Z upward.
+     Isometric projection: X→right-down, Y→left-down, Z→up.
+  ══════════════════════════════════════════════════════════ */
+  (function() {
+    const canvas = document.getElementById('spacetime-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Grid dimensions (number of cells)
+    const COLS = 28;
+    const ROWS = 28;
+    // Physical spacing between grid points (world units)
+    const SPACING = 38;
+
+    // Isometric projection constants
+    // Standard iso: X axis goes right-down at 30°, Y axis goes left-down at 30°
+    const ISO_AX =  Math.cos(Math.PI / 6); // 0.866
+    const ISO_AY =  Math.sin(Math.PI / 6); // 0.5
+    // Z always goes straight up
+    const ISO_ZY = -1.0;                   // Z maps to -y (upward on screen)
+
+    // Scale factor for Z displacement
+    const Z_SCALE = 0.9;
+
+    // Perturbation list
+    const perturbs = [];
+
+    const TINTS = [
+      [56,  189, 248],  // cyan
+      [129, 140, 248],  // indigo
+      [52,  211, 153],  // emerald
+    ];
+
+    function spawnPerturb() {
+      perturbs.push({
+        // Grid-space origin (in grid-cell units)
+        ox: 2 + Math.random() * (COLS - 4),
+        oy: 2 + Math.random() * (ROWS - 4),
+        t:  0,
+        speed:     1.8 + Math.random() * 1.4,   // cells/s
+        amplitude: 22  + Math.random() * 32,    // px Z displacement
+        sigma:     1.4 + Math.random() * 1.2,   // spatial width in cells
+        decay:     0.22 + Math.random() * 0.18, // temporal decay 1/s
+        tint:      Math.floor(Math.random() * TINTS.length)
+      });
+    }
+
+    spawnPerturb();
+    setTimeout(spawnPerturb, 800);
+    setInterval(spawnPerturb, 2800);
+
+    // Project a (grid col, grid row, z) point to screen (px, py)
+    // Grid centred on canvas
+    function project(col, row, z, W, H) {
+      // World coords: offset so grid centre is at origin
+      const wx = (col - COLS / 2) * SPACING;
+      const wy = (row - ROWS / 2) * SPACING;
+      // Isometric screen coords
+      const sx = (wx - wy)  * ISO_AX;
+      const sy = (wx + wy)  * ISO_AY + z * ISO_ZY * Z_SCALE;
+      // Translate to canvas centre, shift upward a bit so grid is centred vertically
+      return {
+        x: W / 2 + sx,
+        y: H / 2 + sy + H * 0.06
+      };
+    }
+
+    function gaussZ(p, col, row) {
+      const dx = col - p.ox;
+      const dy = row - p.oy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const wavefront = p.t * p.speed;
+      const ringDist  = dist - wavefront;
+      const env   = Math.exp(-(ringDist * ringDist) / (2 * p.sigma * p.sigma));
+      const damp  = Math.exp(-p.decay * p.t) * Math.exp(-dist * 0.06);
+      return env * damp * p.amplitude;
+    }
+
+    function gaussColor(col, row, W, H) {
+      let rA = 0, gA = 0, bA = 0, wA = 0;
+      for (const p of perturbs) {
+        const dx = col - p.ox;
+        const dy = row - p.oy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const wf   = p.t * p.speed;
+        const rd   = dist - wf;
+        const env  = Math.exp(-(rd * rd) / (2 * p.sigma * p.sigma));
+        const damp = Math.exp(-p.decay * p.t);
+        const w    = env * damp;
+        const [r, g, b] = TINTS[p.tint];
+        rA += r * w; gA += g * w; bA += b * w; wA += w;
+      }
+      if (wA < 0.01) return null;
+      return [rA / wA, gA / wA, bA / wA, Math.min(wA * 1.2, 0.8)];
+    }
+
+    // Pre-allocate z buffer
+    const zBuf = new Float32Array((COLS + 1) * (ROWS + 1));
+
+    let lastT = null;
+
+    function drawGrid(ts) {
+      if (!lastT) lastT = ts;
+      const dt = Math.min((ts - lastT) / 1000, 0.05);
+      lastT = ts;
+
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // Advance perturbations
+      for (let i = perturbs.length - 1; i >= 0; i--) {
+        perturbs[i].t += dt;
+        const p = perturbs[i];
+        // Cull when wave has passed completely and amplitude decayed
+        if (p.t * p.speed > COLS * 1.5 && Math.exp(-p.decay * p.t) < 0.005) {
+          perturbs.splice(i, 1);
+        }
+      }
+
+      // Compute Z for every vertex
+      for (let row = 0; row <= ROWS; row++) {
+        for (let col = 0; col <= COLS; col++) {
+          let z = 0;
+          for (const p of perturbs) z += gaussZ(p, col, row);
+          zBuf[row * (COLS + 1) + col] = z;
+        }
+      }
+
+      // Draw back-to-front for correct iso painter's order
+      // In iso view: back = low col+row, front = high col+row
+      // Draw row-by-row from back row to front
+      for (let row = 0; row <= ROWS; row++) {
+        // Horizontal lines (varying col, fixed row)
+        for (let col = 0; col < COLS; col++) {
+          const z0 = zBuf[row * (COLS + 1) + col];
+          const z1 = zBuf[row * (COLS + 1) + col + 1];
+          const p0 = project(col,     row, z0, W, H);
+          const p1 = project(col + 1, row, z1, W, H);
+
+          // Color from midpoint
+          const cm = gaussColor(col + 0.5, row, W, H);
+          let stroke;
+          if (cm) {
+            const a = Math.min(cm[3] * 0.65 + 0.07, 0.60);
+            stroke = `rgba(${cm[0].toFixed(0)},${cm[1].toFixed(0)},${cm[2].toFixed(0)},${a.toFixed(3)})`;
+          } else {
+            stroke = 'rgba(56,189,248,0.07)';
+          }
+
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(p1.x, p1.y);
+          ctx.strokeStyle = stroke;
+          ctx.lineWidth = 0.65;
+          ctx.stroke();
+        }
+        // Vertical lines (fixed col = row index, varying row up to current)
+        if (row < ROWS) {
+          for (let col = 0; col <= COLS; col++) {
+            const z0 = zBuf[row       * (COLS + 1) + col];
+            const z1 = zBuf[(row + 1) * (COLS + 1) + col];
+            const p0 = project(col, row,     z0, W, H);
+            const p1 = project(col, row + 1, z1, W, H);
+
+            const cm = gaussColor(col, row + 0.5, W, H);
+            let stroke;
+            if (cm) {
+              const a = Math.min(cm[3] * 0.55 + 0.07, 0.55);
+              stroke = `rgba(${cm[0].toFixed(0)},${cm[1].toFixed(0)},${cm[2].toFixed(0)},${a.toFixed(3)})`;
+            } else {
+              stroke = 'rgba(56,189,248,0.07)';
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(p1.x, p1.y);
+            ctx.strokeStyle = stroke;
+            ctx.lineWidth = 0.65;
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(drawGrid);
+    }
+
+    requestAnimationFrame(drawGrid);
+  })();
+
+
+  /* ══════════════════════════════════════════════════════════
+     GAUSSIAN WAVELETS TRAVELLING ALONG CIRCLE PERIMETER
+     Each wavelet is a localised Gaussian pulse that travels
+     around the circumference of the profile photo.
+  ══════════════════════════════════════════════════════════ */
+  (function() {
+    const canvas = document.getElementById('wavelet-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    const CW = 600;
+    const CH = 600;
+    canvas.width  = CW;
+    canvas.height = CH;
+    const cx = CW / 2;
+    const cy = CH / 2;
+    const PHOTO_R = 113;   // radius of photo circle (110px + 2px border + 1px gap)
+
+    // Number of arc samples used to draw each wavelet
+    const ARC_STEPS = 360;
+
+    const PALETTE = [
+      { r: 56,  g: 189, b: 248 },  // cyan
+      { r: 129, g: 140, b: 248 },  // indigo
+      { r: 52,  g: 211, b: 153 },  // emerald
+      { r: 192, g: 132, b: 252 },  // violet
+      { r: 250, g: 199, b: 117 },  // amber
+    ];
+
+    // Active wavelets
+    const wavelets = [];
+
+    function spawnWavelet() {
+      const col  = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+      // sigma: half-angle of the Gaussian in radians (controls arc width)
+      const sigma   = (Math.PI / 180) * (12 + Math.random() * 30);  // 12°–42°
+      // angular speed: full circle in 3–7 s
+      const speed   = (2 * Math.PI) / (3.5 + Math.random() * 3.5);  // rad/s
+      const amp     = 0.5 + Math.random() * 0.5;    // peak alpha
+      const decay   = 0.25 + Math.random() * 0.3;   // 1/s temporal damping
+      // width of the glowing band radiating outward (px)
+      const width   = 6 + Math.random() * 18;
+      // direction: 1=CCW, -1=CW
+      const dir     = Math.random() < 0.5 ? 1 : -1;
+      // random start angle
+      const angle0  = Math.random() * 2 * Math.PI;
+
+      wavelets.push({ r: col.r, g: col.g, b: col.b,
+                      angle: angle0, sigma, speed, amp, decay, width, dir,
+                      age: 0 });
+    }
+
+    // Boot with a couple staggered
+    spawnWavelet();
+    setTimeout(spawnWavelet, 700);
+    setTimeout(spawnWavelet, 1500);
+
+    function scheduleNext() {
+      const delay = 1000 + Math.random() * 2000;
+      setTimeout(() => { spawnWavelet(); scheduleNext(); }, delay);
+    }
+    scheduleNext();
+
+    let lastT = null;
+
+    function draw(ts) {
+      if (!lastT) lastT = ts;
+      const dt = Math.min((ts - lastT) / 1000, 0.05);
+      lastT = ts;
+
+      ctx.clearRect(0, 0, CW, CH);
+
+      for (let i = wavelets.length - 1; i >= 0; i--) {
+        const w = wavelets[i];
+        w.age   += dt;
+        w.angle += w.dir * w.speed * dt;
+
+        const peakAlpha = w.amp * Math.exp(-w.decay * w.age);
+        if (peakAlpha < 0.004) { wavelets.splice(i, 1); continue; }
+
+        // Draw the wavelet as a series of arc segments.
+        // For each angle θ around the circle, compute the Gaussian weight
+        // relative to the wavelet centre angle w.angle.
+        // We sample the circle at ARC_STEPS points and draw thick arc
+        // segments with alpha proportional to the Gaussian.
+
+        // Extent: draw from centre ± 3σ
+        const halfSpan = 3 * w.sigma;
+        const steps = Math.max(60, Math.round((2 * halfSpan / (2 * Math.PI)) * ARC_STEPS));
+        const dTheta = (2 * halfSpan) / steps;
+
+        for (let s = 0; s < steps; s++) {
+          // Angle at the midpoint of this segment
+          const theta = (w.angle - halfSpan) + (s + 0.5) * dTheta;
+          const relAngle = theta - w.angle;
+          const gaussW   = Math.exp(-0.5 * (relAngle / w.sigma) * (relAngle / w.sigma));
+          const alpha    = peakAlpha * gaussW;
+          if (alpha < 0.004) continue;
+
+          // Segment endpoints on the circle
+          const t0 = theta - dTheta * 0.5;
+          const t1 = theta + dTheta * 0.5;
+          const x0 = cx + PHOTO_R * Math.cos(t0);
+          const y0 = cy + PHOTO_R * Math.sin(t0);
+          const x1 = cx + PHOTO_R * Math.cos(t1);
+          const y1 = cy + PHOTO_R * Math.sin(t1);
+
+          // Also draw a glow band radiating outward
+          // Use a short radial gradient for each small segment
+          const midCos = Math.cos(theta);
+          const midSin = Math.sin(theta);
+          const r0x = cx + (PHOTO_R - 2)           * midCos;
+          const r0y = cy + (PHOTO_R - 2)           * midSin;
+          const r1x = cx + (PHOTO_R + w.width + 2) * midCos;
+          const r1y = cy + (PHOTO_R + w.width + 2) * midSin;
+
+          const grad = ctx.createLinearGradient(r0x, r0y, r1x, r1y);
+          grad.addColorStop(0,   `rgba(${w.r},${w.g},${w.b},0)`);
+          grad.addColorStop(0.15, `rgba(${w.r},${w.g},${w.b},${(alpha * 0.9).toFixed(4)})`);
+          grad.addColorStop(0.5,  `rgba(${w.r},${w.g},${w.b},${(alpha).toFixed(4)})`);
+          grad.addColorStop(0.85, `rgba(${w.r},${w.g},${w.b},${(alpha * 0.6).toFixed(4)})`);
+          grad.addColorStop(1,   `rgba(${w.r},${w.g},${w.b},0)`);
+
+          // Draw a fat stroked segment to represent this arc slice
+          ctx.beginPath();
+          ctx.arc(cx, cy, PHOTO_R + w.width / 2, t0, t1);
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = w.width + 6;
+          ctx.lineCap = 'butt';
+          ctx.stroke();
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    requestAnimationFrame(draw);
+  })();
 </script>
 
 </body>
