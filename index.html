@@ -284,6 +284,12 @@
       color: var(--text);
       white-space: nowrap;
       margin-right: 0.3rem;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .nav-name:hover {
+      color: var(--accent);
     }
 
     .nav-tabs {
@@ -1248,6 +1254,14 @@
       smoothScrollToSection(target, 860);
     });
   });
+
+  const navName = document.querySelector('.nav-name');
+  if (navName) {
+    navName.addEventListener('click', () => {
+      const heroSection = document.getElementById('heroSection');
+      if (heroSection) smoothScrollToSection(heroSection, 900);
+    });
+  }
 
   if (heroAboutBtn) {
     heroAboutBtn.addEventListener('click', (event) => {
