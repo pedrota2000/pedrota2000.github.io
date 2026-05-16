@@ -1362,6 +1362,26 @@
     // Perturbation list
     const perturbs = [];
 
+    // Hidden instability meter (easter egg trigger).
+    // If mouse-driven perturbations become too violent, spacetime "explodes".
+    let instability = 0;
+    const INSTABILITY_THRESHOLD = 32.0; // much harder to trigger black hole
+    const INSTABILITY_DECAY = 0.22;
+
+    // Explosion / recovery state
+    let recoveryTimer = 0;
+    const RECOVERY_DURATION = 2.8;
+    let diffusionBoost = 0;
+    let flashIntensity = 0;
+    let flashCol = COLS / 2;
+    let flashRow = ROWS / 2;
+
+    // Black-hole easter egg state
+    let blackHole = null;
+    const BH_DRIFT = 2.0; // grid cells / s
+    const BH_MIN_LIFETIME = 7.5; // much longer evaporation
+    const BH_MAX_LIFETIME = 14.0;
+
     const TINTS = [
       [56,  189, 248],  // cyan
       [129, 140, 248],  // indigo
@@ -1380,19 +1400,118 @@
       };
     }
 
-    function spawnPerturbAt(col, row) {
+    function spawnPerturbAt(col, row, opts = {}) {
       // Clamp to interior grid
       const oc = Math.max(1.5, Math.min(COLS - 1.5, col));
       const or = Math.max(1.5, Math.min(ROWS - 1.5, row));
+      const ampMul = opts.ampMul ?? 1;
+      const speedMul = opts.speedMul ?? 1;
+      const sigmaMul = opts.sigmaMul ?? 1;
+      const decayMul = opts.decayMul ?? 1;
       perturbs.push({
         ox: oc,
         oy: or,
         t:  0,
-        speed:     1.8 + Math.random() * 1.4,
-        amplitude: 22  + Math.random() * 32,
-        sigma:     1.4 + Math.random() * 1.2,
-        decay:     0.22 + Math.random() * 0.18,
+        speed:     (1.8 + Math.random() * 1.4) * speedMul,
+        amplitude: (22  + Math.random() * 32) * ampMul,
+        sigma:     (1.4 + Math.random() * 1.2) * sigmaMul,
+        decay:     (0.22 + Math.random() * 0.18) * decayMul,
         tint:      Math.floor(Math.random() * TINTS.length)
+      });
+    }
+
+    function triggerExplosion(col, row, opts = {}) {
+      flashCol = Math.max(1.5, Math.min(COLS - 1.5, col));
+      flashRow = Math.max(1.5, Math.min(ROWS - 1.5, row));
+
+      // Keep only a handful of existing waves so the burst dominates.
+      if (perturbs.length > 10) perturbs.splice(0, perturbs.length - 10);
+
+      const ampMul = opts.ampMul ?? 3.0;
+      const speedMul = opts.speedMul ?? 2.2;
+      const sigmaMul = opts.sigmaMul ?? 1.5;
+      const decayMul = opts.decayMul ?? 1.35;
+      const shellCount = opts.shellCount ?? 16;
+      const shellAmpMul = opts.shellAmpMul ?? 2.15;
+      const shellSpeedMul = opts.shellSpeedMul ?? 1.9;
+      const shellSigmaMul = opts.shellSigmaMul ?? 1.28;
+      const shellDecayMul = opts.shellDecayMul ?? 1.65;
+
+      // Central burst.
+      spawnPerturbAt(flashCol, flashRow, {
+        ampMul,
+        speedMul,
+        sigmaMul,
+        decayMul
+      });
+
+      // Radial shell of secondary bursts.
+      for (let i = 0; i < shellCount; i++) {
+        const ang = (i / shellCount) * Math.PI * 2;
+        const rad = 0.7 + Math.random() * 2.6;
+        spawnPerturbAt(flashCol + Math.cos(ang) * rad, flashRow + Math.sin(ang) * rad, {
+          ampMul: shellAmpMul,
+          speedMul: shellSpeedMul,
+          sigmaMul: shellSigmaMul,
+          decayMul: shellDecayMul
+        });
+      }
+
+      // Recovery phase: rapid diffusion back to equilibrium.
+      recoveryTimer = RECOVERY_DURATION;
+      diffusionBoost = 1.55;
+      flashIntensity = 1;
+      instability = 0;
+    }
+
+    function spawnBlackHole(col, row) {
+      if (blackHole) return;
+
+      const bc = Math.max(2.0, Math.min(COLS - 2.0, col));
+      const br = Math.max(2.0, Math.min(ROWS - 2.0, row));
+      const ang = Math.random() * Math.PI * 2;
+      const speed = 0.6 + Math.random() * BH_DRIFT;
+
+      // Start as a proto-black-hole (grows in smoothly)
+      blackHole = {
+        col: bc,
+        row: br,
+        vx: Math.cos(ang) * speed,
+        vy: Math.sin(ang) * speed,
+        age: 0,
+        life: BH_MIN_LIFETIME + Math.random() * (BH_MAX_LIFETIME - BH_MIN_LIFETIME),
+        baseRadius: 4.6 + Math.random() * 1.7,
+        radius: 0.1, // start tiny
+        depth: 0.1,  // start shallow
+        targetRadius: 4.6 + Math.random() * 1.7,
+        targetDepth: 72 + Math.random() * 26,
+        spin: Math.random() * Math.PI * 2,
+        growing: true,
+        growTime: 0
+      };
+
+      instability = 0;
+      if (perturbs.length > 12) perturbs.splice(0, perturbs.length - 12);
+      flashCol = bc;
+      flashRow = br;
+      flashIntensity = Math.max(flashIntensity, 0.18);
+    }
+
+    function evaporateBlackHole() {
+      if (!blackHole) return;
+      const ec = blackHole.col;
+      const er = blackHole.row;
+      blackHole = null;
+      triggerExplosion(ec, er, {
+        ampMul: 3.5,
+        speedMul: 2.4,
+        sigmaMul: 1.7,
+        decayMul: 1.2,
+        shellCount: 20,
+        shellAmpMul: 2.4,
+        shellSpeedMul: 2.1,
+        shellSigmaMul: 1.35,
+        shellDecayMul: 1.5
       });
     }
 
@@ -1401,20 +1520,47 @@
 
     // Mouse tracking — listen on the hero section (canvas has pointer-events:none)
     let lastSpawnTime = 0;
+    let lastMoveTime = 0;
     let lastMouseCol = -999, lastMouseRow = -999;
     const SPAWN_INTERVAL = 200;  // ms between spawns
     const MOVE_THRESHOLD = 1.0;  // grid cells of movement needed
 
     const heroEl = document.getElementById('heroSection');
     heroEl.addEventListener('mousemove', (e) => {
+      if (recoveryTimer > 0) return;
+
       const rect = canvas.getBoundingClientRect();
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
       const { col, row } = screenToGrid(mx, my, canvas.width, canvas.height);
       const now = performance.now();
+      const dtMove = Math.max(16, now - (lastMoveTime || now));
+      lastMoveTime = now;
       const moved = Math.hypot(col - lastMouseCol, row - lastMouseRow);
+      const speedCellsPerSec = (moved * 1000) / dtMove;
+
       if (now - lastSpawnTime > SPAWN_INTERVAL && moved > MOVE_THRESHOLD) {
         spawnPerturbAt(col, row);
+
+        // If black hole exists, nudge its velocity toward the mouse direction
+        if (blackHole && !blackHole.growing) {
+          const dx = col - blackHole.col;
+          const dy = row - blackHole.row;
+          const mag = Math.hypot(dx, dy);
+          if (mag > 0.1) {
+            // Add a small nudge in the direction of the mouse
+            const nudge = 0.55 + Math.min(1.2, moved * 0.18);
+            blackHole.vx += (dx / mag) * nudge * 0.18;
+            blackHole.vy += (dy / mag) * nudge * 0.18;
+          }
+        }
+
+        // Nonlinear accumulation: fast/agitated motion destabilises the manifold.
+        instability += 0.55 + Math.min(1.85, moved * 0.45 + speedCellsPerSec * 0.02);
+        if (instability > INSTABILITY_THRESHOLD) {
+          spawnBlackHole(col, row);
+        }
+
         lastSpawnTime = now;
         lastMouseCol  = col;
         lastMouseRow  = row;
@@ -1449,8 +1595,27 @@
       const wavefront = p.t * p.speed;
       const ringDist  = dist - wavefront;
       const env   = Math.exp(-(ringDist * ringDist) / (2 * p.sigma * p.sigma));
-      const damp  = Math.exp(-p.decay * p.t) * Math.exp(-dist * 0.06);
+      const diffusionDecay = p.decay + diffusionBoost * 0.62;
+      const spatialSpread = 0.06 + diffusionBoost * 0.05;
+      const damp  = Math.exp(-diffusionDecay * p.t) * Math.exp(-dist * spatialSpread);
       return env * damp * fadeIn(p.t) * p.amplitude;
+    }
+
+    function blackHoleZ(col, row) {
+      if (!blackHole) return 0;
+      // Smooth in during proto phase
+      let growFrac = 1;
+      if (blackHole.growing) {
+        growFrac = Math.min(1, blackHole.growTime / 1.6); // 1.6s grow-in
+      }
+      const dx = col - blackHole.col;
+      const dy = row - blackHole.row;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      // Make the effect much larger and deeper
+      const sigma = Math.max(2.5, blackHole.radius * 2.2); // wider spatial effect
+      const sink = -blackHole.depth * 2.2 * growFrac * Math.exp(-(dist * dist) / (2 * sigma * sigma));
+      // Remove rim, just strong central bending
+      return sink;
     }
 
     function gaussColor(col, row, W, H) {
@@ -1462,7 +1627,7 @@
         const wf   = p.t * p.speed;
         const rd   = dist - wf;
         const env  = Math.exp(-(rd * rd) / (2 * p.sigma * p.sigma));
-        const damp = Math.exp(-p.decay * p.t);
+        const damp = Math.exp(-(p.decay + diffusionBoost * 0.62) * p.t);
         const w    = env * damp * fadeIn(p.t);
         const [r, g, b] = TINTS[p.tint];
         rA += r * w; gA += g * w; bA += b * w; wA += w;
@@ -1495,11 +1660,87 @@
         }
       }
 
+      // Relax instability over time.
+      instability = Math.max(0, instability - dt * INSTABILITY_DECAY);
+
+      if (blackHole) {
+        if (blackHole.growing) {
+          // Proto phase: smoothly grow in radius/depth
+          blackHole.growTime += dt;
+          const growFrac = Math.min(1, blackHole.growTime / 1.6);
+          blackHole.radius = blackHole.targetRadius * growFrac;
+          blackHole.depth = blackHole.targetDepth * growFrac;
+          if (growFrac >= 1) {
+            blackHole.growing = false;
+            blackHole.baseRadius = blackHole.targetRadius;
+            blackHole.age = 0;
+          }
+        } else {
+          blackHole.age += dt;
+          blackHole.spin += dt * 1.45;
+
+          // Random drift with soft bounds to keep it moving across the manifold.
+          blackHole.vx += (Math.random() - 0.5) * dt * 1.9;
+          blackHole.vy += (Math.random() - 0.5) * dt * 1.9;
+
+          const vNorm = Math.hypot(blackHole.vx, blackHole.vy);
+          const vCap = 2.2;
+          if (vNorm > vCap) {
+            blackHole.vx = (blackHole.vx / vNorm) * vCap;
+            blackHole.vy = (blackHole.vy / vNorm) * vCap;
+          }
+
+          blackHole.col += blackHole.vx * dt;
+          blackHole.row += blackHole.vy * dt;
+
+          const edge = 1.9;
+          if (blackHole.col < edge) {
+            blackHole.col = edge;
+            blackHole.vx = Math.abs(blackHole.vx) * 0.9;
+          } else if (blackHole.col > COLS - edge) {
+            blackHole.col = COLS - edge;
+            blackHole.vx = -Math.abs(blackHole.vx) * 0.9;
+          }
+
+          if (blackHole.row < edge) {
+            blackHole.row = edge;
+            blackHole.vy = Math.abs(blackHole.vy) * 0.9;
+          } else if (blackHole.row > ROWS - edge) {
+            blackHole.row = ROWS - edge;
+            blackHole.vy = -Math.abs(blackHole.vy) * 0.9;
+          }
+
+          const lifeFrac = Math.min(1, blackHole.age / blackHole.life);
+          const shrink = Math.max(0, 1 - lifeFrac);
+          blackHole.radius = blackHole.baseRadius * (0.25 + 0.75 * shrink);
+          blackHole.depth = Math.max(22, blackHole.targetDepth * shrink);
+
+          // Stochastic evaporation near the end of life, or deterministic timeout.
+          const canEvaporate = blackHole.age > blackHole.life * 0.55;
+          const randomEvap = canEvaporate && Math.random() < dt * 0.65;
+          if (randomEvap || blackHole.age >= blackHole.life || blackHole.radius < 1.05) {
+            evaporateBlackHole();
+          }
+        }
+      }
+
+      // Explosion aftermath: temporarily diffuse all perturbations faster.
+      if (recoveryTimer > 0) {
+        recoveryTimer = Math.max(0, recoveryTimer - dt);
+        diffusionBoost = Math.max(0, diffusionBoost - dt * 0.22);
+      } else {
+        diffusionBoost = Math.max(0, diffusionBoost - dt * 0.45);
+      }
+
+      // Flash fades quickly, leaving a soft afterglow.
+      flashIntensity = Math.max(0, flashIntensity - dt * (recoveryTimer > 0 ? 1.55 : 4.8));
+
       // Compute Z for every vertex
       for (let row = 0; row <= ROWS; row++) {
         for (let col = 0; col <= COLS; col++) {
           let z = 0;
           for (const p of perturbs) z += gaussZ(p, col, row);
+          z += blackHoleZ(col, row);
           zBuf[row * (COLS + 1) + col] = z;
         }
       }
@@ -1557,6 +1798,61 @@
             ctx.stroke();
           }
         }
+      }
+
+      if (blackHole) {
+        const bhp = project(blackHole.col, blackHole.row, blackHoleZ(blackHole.col, blackHole.row), W, H);
+        const screenR = Math.max(8, blackHole.radius * 9.5);
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'source-over';
+
+        // Event horizon core (fade in with proto phase)
+        const core = ctx.createRadialGradient(
+          bhp.x,
+          bhp.y,
+          screenR * 0.2,
+          bhp.x,
+          bhp.y,
+          screenR
+        );
+        let coreAlpha = blackHole.growing ? Math.min(1, blackHole.growTime / 1.6) : 1;
+        core.addColorStop(0, `rgba(0,0,0,${0.97 * coreAlpha})`);
+        core.addColorStop(0.7, `rgba(1,3,10,${0.95 * coreAlpha})`);
+        core.addColorStop(1, `rgba(3,8,18,${0.15 * coreAlpha})`);
+        ctx.fillStyle = core;
+        ctx.beginPath();
+        ctx.arc(bhp.x, bhp.y, screenR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      if (flashIntensity > 0.002) {
+        const flashScreen = project(flashCol, flashRow, 0, W, H);
+        const coreRadius = 26 + flashIntensity * 88;
+        const haloRadius = 120 + flashIntensity * 380;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+
+        const halo = ctx.createRadialGradient(
+          flashScreen.x, flashScreen.y, coreRadius * 0.15,
+          flashScreen.x, flashScreen.y, haloRadius
+        );
+        halo.addColorStop(0, `rgba(235,250,255,${(0.95 * flashIntensity).toFixed(3)})`);
+        halo.addColorStop(0.2, `rgba(170,224,255,${(0.45 * flashIntensity).toFixed(3)})`);
+        halo.addColorStop(0.55, `rgba(129,140,248,${(0.26 * flashIntensity).toFixed(3)})`);
+        halo.addColorStop(1, 'rgba(129,140,248,0)');
+
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(flashScreen.x, flashScreen.y, haloRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(240,252,255,${(0.18 * flashIntensity).toFixed(3)})`;
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
       }
 
       requestAnimationFrame(drawGrid);
