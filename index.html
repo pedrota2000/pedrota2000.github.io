@@ -637,6 +637,79 @@
       background: linear-gradient(to left, transparent, rgba(56, 189, 248, 0.32));
     }
 
+    /* ── CV download card + at-a-glance ───────────────────────── */
+    .cv-download {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      padding: 1.15rem 1.5rem;
+      margin-bottom: 1.4rem;
+      border: 1px solid rgba(52, 211, 153, 0.28);
+      border-left: 2px solid rgba(52, 211, 153, 0.55);
+      border-radius: 6px;
+      background: linear-gradient(130deg, rgba(15, 23, 42, 0.68), rgba(15, 23, 42, 0.35));
+    }
+
+    .cv-download-title { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+    .cv-download-sub   { font-size: 0.88rem; color: var(--muted); margin-top: 0.15rem; }
+
+    .cv-download-btn {
+      padding: 0.6rem 1.3rem;
+      border-radius: 8px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: var(--accent3);
+      font-size: 0.92rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.2s ease;
+    }
+
+    .cv-download-btn:hover { background: rgba(52, 211, 153, 0.22); text-decoration: none; }
+    .cv-download-btn:focus-visible { outline: 2px solid var(--accent3); outline-offset: 2px; }
+
+    .cv-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.7rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .cv-stat {
+      padding: 0.85rem 1rem;
+      border: 1px solid rgba(56, 189, 248, 0.14);
+      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.42);
+      text-align: center;
+    }
+
+    .cv-stat-num {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+
+    .cv-stat-label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-top: 0.15rem;
+    }
+
+    .cv-more {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 0.7rem;
+      font-style: italic;
+    }
+
     /* ── Contact ──────────────────────────────────────────────── */
     .contact-row {
       display: flex;
@@ -1069,6 +1142,23 @@
   <section id="cv" class="reveal">
     <h2 class="section-title">Curriculum Vitae</h2>
 
+    <div class="cv-download">
+      <div>
+        <div class="cv-download-title">Full academic CV</div>
+        <div class="cv-download-sub">
+          Complete publications, talks, schools, teaching and outreach · PDF, 4 pages · updated July 2026
+        </div>
+      </div>
+      <a class="cv-download-btn" href="Pedro_Tarancon_Alvarez_CV.pdf" target="_blank" rel="noopener">↓ Download CV (PDF)</a>
+    </div>
+
+    <div class="cv-stats">
+      <div class="cv-stat"><span class="cv-stat-num">7</span><span class="cv-stat-label">Publications</span></div>
+      <div class="cv-stat"><span class="cv-stat-num">9</span><span class="cv-stat-label">Talks &amp; posters</span></div>
+      <div class="cv-stat"><span class="cv-stat-num">2</span><span class="cv-stat-label">Research stays</span></div>
+      <div class="cv-stat"><span class="cv-stat-num">20+</span><span class="cv-stat-label">Schools &amp; workshops</span></div>
+    </div>
+
     <p class="cv-label">PhD supervision</p>
     <div class="supervisor-row" style="margin-bottom:1.2rem;">
       <div class="supervisor-card">
@@ -1091,34 +1181,20 @@
         <div class="timeline-role">PhD in Theoretical Physics and Cosmology</div>
         <div class="timeline-place">Institute of Cosmos Sciences (ICCUB) · Universitat de Barcelona</div>
         <div class="timeline-desc">
-          Supervised by David Mateos and Raúl Jiménez. Applying the holographic principle
-          (AdS/CFT) to strong-coupling phenomena in astrophysics: phase transitions in the early
-          universe, neutron star mergers, and holographic turbulence.
-          Primary numerical tool: physics-informed neural networks (PINNs).<br>
-          Funded by an FPI fellowship, <em>Ministerio de Ciencia e Innovación</em>
-          (project: <em>Dark Energy and the Origin of the Universe</em>).
+          Supervised by David Mateos and Raúl Jiménez, funded by an FPI fellowship
+          (<em>Ministerio de Ciencia e Innovación</em>).
         </div>
       </div>
 
       <div class="timeline-item">
         <div class="timeline-date">2022 – 2023</div>
         <div class="timeline-role">MSc in Theoretical Physics — Particle Physics &amp; Cosmology</div>
-        <div class="timeline-place">Instituto de Física Teórica (IFT) · Universidad Autónoma de Madrid (UAM-CSIC)</div>
+        <div class="timeline-place">Instituto de Física Teórica (IFT) · Universidad Autónoma de Madrid</div>
         <div class="timeline-desc">
-          Advanced QFT, General Relativity, Quantum Gravity, String Theory, Advanced Mathematics.
+          Thesis: <em>Quantum Chaos in de Sitter Space and Centaur Geometries</em> —
+          supervised by Juan F. Pedraza and Ayan Kumar Patra.
         </div>
-        <span class="timeline-grade">Grade: 9.33 / 10</span>
-        <div class="timeline-desc" style="margin-top:0.9rem;">
-          <strong style="color:var(--text); font-size:0.88rem;">Master's Thesis</strong> —
-          <em>Quantum Chaos in de Sitter Space and Centaur Geometries</em><br>
-          Supervisors: Juan F. Pedraza &amp; Ayan Kumar Patra (IFT, UAM-CSIC)<br>
-          <span class="timeline-grade">Grade: 9.8 / 10</span><br>
-          <span style="font-size:0.83rem; color:#64748b; display:block; margin-top:0.3rem;">
-            Studied quantum chaos in a 2D gravity solution (Centaur geometry) interpolating between
-            a de Sitter interior and an AdS exterior. Chaos is diagnosed via out-of-time-ordered
-            correlators computed from spacelike geodesics anchored at the AdS₂ boundaries.
-          </span>
-        </div>
+        <span class="timeline-grade">Degree 9.33 · Thesis 9.8</span>
       </div>
 
       <div class="timeline-item">
@@ -1126,21 +1202,10 @@
         <div class="timeline-role">BSc in Physics</div>
         <div class="timeline-place">Universidad Complutense de Madrid (UCM)</div>
         <div class="timeline-desc">
-          With honours in Algebra, Scientific Computing, Structure of Matter, Differential Geometry,
-          Observational Astronomy, Stellar Astrophysics, and Elementary Particles.
-          Second and third year (first semester) taught in English.
+          Thesis: <em>Structural relations of remote galaxies from the CANDELS and 3D-HST catalogues</em> —
+          supervised by Jesús Gallego Maestro. Honours in seven courses.
         </div>
-        <span class="timeline-grade">Grade: 9.02 / 10</span>
-        <div class="timeline-desc" style="margin-top:0.9rem;">
-          <strong style="color:var(--text); font-size:0.88rem;">Bachelor's Thesis</strong> —
-          <em>Structural relations of remote galaxies from the CANDELS and 3D-HST catalogues</em><br>
-          Supervisor: Jesús Gallego Maestro (UCM)<br>
-          <span class="timeline-grade">Grade: 8.8 / 10</span><br>
-          <span style="font-size:0.83rem; color:#64748b; display:block; margin-top:0.3rem;">
-            Statistical analysis of structural parameters (size, mass, morphology) of galaxies at
-            redshifts 0.4–1.5 using the CANDELS and 3D-HST photometric and spectroscopic catalogues.
-          </span>
-        </div>
+        <span class="timeline-grade">Degree 9.02 · Thesis 8.8</span>
       </div>
 
     </div>
@@ -1152,136 +1217,29 @@
         <div class="timeline-date">2023 – present</div>
         <div class="timeline-role">PhD Researcher (FPI Fellow)</div>
         <div class="timeline-place">ICCUB · Universitat de Barcelona</div>
-        <div class="timeline-desc">
-          Holographic reconstruction of bulk geometries from thermodynamic data; efficient PINN
-          architectures for stiff PDEs; phase transitions in the early universe via AdS/CFT;
-          AI agents for scientific discovery (Denario project).
-        </div>
       </div>
 
       <div class="timeline-item">
         <div class="timeline-date">June 2025</div>
         <div class="timeline-role">Visiting Researcher</div>
-        <div class="timeline-place">Center for Computational Astrophysics · Flatiron Institute, New York</div>
-        <div class="timeline-desc">
-          One-week research visit hosted by Prof. Francisco Villaescusa-Navarro, contributing to the
-          Denario project on AI agents for scientific discovery, including set-up and workflows on the
-          Rusty computing cluster.
-        </div>
+        <div class="timeline-place">Flatiron Institute, New York — host: Francisco Villaescusa-Navarro</div>
       </div>
 
       <div class="timeline-item">
         <div class="timeline-date">April – July 2024</div>
         <div class="timeline-role">Visiting Researcher</div>
-        <div class="timeline-place">StellarDNN Lab · Harvard SEAS, Cambridge MA</div>
-        <div class="timeline-desc">
-          Research stay hosted by Prof. Pavlos Protopapas, developing physics-informed neural network
-          methods for holography- and cosmology-related inverse problems. This collaboration is at the
-          origin of an ongoing line of joint publications.
-        </div>
+        <div class="timeline-place">StellarDNN Lab · Harvard SEAS — host: Pavlos Protopapas</div>
       </div>
 
       <div class="timeline-item">
         <div class="timeline-date">2021 – 2022</div>
         <div class="timeline-role">Collaboration Grantee (Ministry of Education)</div>
-        <div class="timeline-place">Earth Physics &amp; Astrophysics Dept. · Universidad Complutense de Madrid</div>
-        <div class="timeline-desc">
-          Development of a control prototype for the MOSAIC instrument of the ELT, within the GUAIX and
-          ISCAR research groups (Profs. África Castillo and Jesús Gallego).
-        </div>
+        <div class="timeline-place">Universidad Complutense de Madrid — MOSAIC instrument for the ELT</div>
       </div>
 
     </div>
 
-    <p class="cv-label">Teaching</p>
-    <div class="timeline">
-
-      <div class="timeline-item">
-        <div class="timeline-date">2025 – 2027</div>
-        <div class="timeline-role">Instructor — <em>Mathematical and Statistical Techniques</em></div>
-        <div class="timeline-place">MSc in Astrophysics, Particle Physics &amp; Cosmology · Universitat de Barcelona</div>
-        <div class="timeline-desc">
-          Lecturing (in English) within the core methods course of the Master's programme. Designed and
-          delivered lectures and exercises on machine learning, physics-informed neural networks and
-          dimensionality reduction. See the <a href="#teaching">Teaching</a> section for materials.
-        </div>
-      </div>
-
-    </div>
-
-    <p class="cv-label">Schools, Workshops &amp; Collaborations</p>
-    <div class="timeline">
-
-      <div class="timeline-item">
-        <div class="timeline-date">2026</div>
-        <div class="timeline-desc" style="margin-top:0.1rem;">
-          <strong style="color:var(--text);">Geometry of Flows — Simons Collaboration retreat</strong>
-          (explainability in ML &amp; multi-agent inference; mathematical hydrodynamics and turbulence),
-          Canfranc Underground Laboratory, Spain.<br>
-          <strong style="color:var(--text);">Geometry of Flows Workshop</strong>
-          (geometry of fluid flows, hydrodynamics and turbulence), Flatiron Institute, New York.<br>
-          <strong style="color:var(--text);">AI &amp; PDE: ICLR 2026 Workshop</strong>
-          on AI and Partial Differential Equations, Rio de Janeiro, Brazil.<br>
-          <strong style="color:var(--text);">Iberian Strings 2026</strong>, IGFAE, Santiago de Compostela, Spain.
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-date">2025</div>
-        <div class="timeline-desc" style="margin-top:0.1rem;">
-          <strong style="color:var(--text);">ETH-ITS Workshop “Geometry of Flows”</strong>
-          (hydrodynamics and turbulence), ETH Zurich, Switzerland.<br>
-          <strong style="color:var(--text);">Simons Collaboration for the Geometry of Flows</strong>,
-          Institute for Advanced Study, Princeton, NJ.<br>
-          <strong style="color:var(--text);">“Gravity — New Quantum and String Perspectives”</strong>,
-          Centro de Ciencias de Benasque Pedro Pascual, Spain.<br>
-          <strong style="color:var(--text);">“New Insights in Black Hole Physics from Holography”</strong>,
-          IFT Madrid, Spain.<br>
-          <strong style="color:var(--text);">GGI School on asymptotic symmetries and flat holography</strong>,
-          Galileo Galilei Institute, Florence, Italy.<br>
-          <strong style="color:var(--text);">Iberian Strings 2025</strong>, Bizkaia Aretoa, Bilbao, Spain.
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-date">2024 – 2025</div>
-        <div class="timeline-desc" style="margin-top:0.1rem;">
-          <strong style="color:var(--text);">Barcelona Initiative for Gravitation (BIG) Meetings</strong>
-          (4th–7th), Barcelona, Spain.<br>
-          <strong style="color:var(--text);">Cross-Collserola PhD Meeting</strong> in Astrophysics,
-          Cosmology and Particles, Barcelona (2023, 2025).
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-date">2024</div>
-        <div class="timeline-desc" style="margin-top:0.1rem;">
-          <strong style="color:var(--text);">“The Complexity of the Cosmos”</strong>,
-          Gran Sasso Science Institute, L'Aquila, Italy.<br>
-          <strong style="color:var(--text);">COSMO CLASSIC 2024</strong>: future prospects for Cosmology,
-          Asiago, Italy.<br>
-          <strong style="color:var(--text);">New Frontiers in Strong Gravity</strong>,
-          Centro de Ciencias de Benasque Pedro Pascual, Spain.<br>
-          <strong style="color:var(--text);">GGI School on Theoretical Aspects of Astroparticle Physics,
-          Cosmology and Gravitation</strong>, Florence, Italy — 60 hours.<br>
-          <strong style="color:var(--text);">CERN Winter School on Supergravity, Strings and Gauge Theory</strong>,
-          CERN, Geneva.<br>
-          <strong style="color:var(--text);">ComputeFest 2024: Physics-Informed Neural Networks (PINNs)</strong>,
-          Harvard IACS — 16 hours.
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-date">2023 – 2024</div>
-        <div class="timeline-desc" style="margin-top:0.1rem;">
-          <strong style="color:var(--text);">ICCUB Machine Learning Workshop</strong> (2023) and
-          <strong style="color:var(--text);">ICCUB Winter Meeting</strong> (2024), Barcelona.
-        </div>
-      </div>
-
-    </div>
-
-    <p class="cv-label">Talks &amp; presentations</p>
+    <p class="cv-label">Selected talks</p>
     <div class="timeline">
 
       <div class="timeline-item">
@@ -1291,51 +1249,54 @@
       </div>
 
       <div class="timeline-item">
-        <div class="timeline-date">2026 · Poster</div>
-        <div class="timeline-role">"Learning embeddings of non-linear PDEs: the Burgers' equation"</div>
-        <div class="timeline-place">AI &amp; PDE Workshop, ICLR 2026 · Rio de Janeiro</div>
+        <div class="timeline-date">2025 · Invited talk</div>
+        <div class="timeline-role">"Gravitational Duals from Equations of State"</div>
+        <div class="timeline-place">"New Insights in Black Hole Physics from Holography" · IFT, Madrid</div>
       </div>
 
       <div class="timeline-item">
         <div class="timeline-date">2025 · Oral</div>
         <div class="timeline-role">"The Denario Project: Deep Knowledge Agents for Scientific Discovery"</div>
-        <div class="timeline-place">Cross-Collserola PhD Meeting · IFAE, Universitat Autònoma de Barcelona</div>
+        <div class="timeline-place">Cross-Collserola PhD Meeting · IFAE, Barcelona</div>
+      </div>
+
+    </div>
+    <p class="cv-more">
+      All nine talks, plus 20+ schools and workshops (Simons Collaboration for the Geometry of Flows at
+      IAS Princeton, ETH Zurich, CERN, GGI Florence, Benasque), are listed in the PDF.
+    </p>
+
+    <p class="cv-label">Teaching</p>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">2025 – 2027</div>
+        <div class="timeline-role">Instructor — <em>Mathematical and Statistical Techniques</em></div>
+        <div class="timeline-place">MSc in Astrophysics, Particle Physics &amp; Cosmology · Universitat de Barcelona</div>
+        <div class="timeline-desc">
+          Machine learning and PINNs module — see the <a href="#teaching">Teaching</a> section for lecture
+          notes and course materials.
+        </div>
+      </div>
+    </div>
+
+    <p class="cv-label">Media &amp; outreach</p>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-date">October 2025 · Press</div>
+        <div class="timeline-role">Research featured in <em>La Vanguardia</em></div>
+        <div class="timeline-place">
+          "UB researchers develop new AI techniques to solve complex equations in physics" —
+          <a href="https://www.lavanguardia.com/launi/20251003/11120775/investigadores-ub-desarrollan-nuevas-tecnicas-inteligencia-artificial-resolver-ecuaciones-complejas-fisica.html" target="_blank" rel="noopener">read ↗</a>
+        </div>
       </div>
 
       <div class="timeline-item">
-        <div class="timeline-date">2025 · Internal seminar</div>
-        <div class="timeline-role">"The Denario Project"</div>
-        <div class="timeline-place">ICCUB, Universitat de Barcelona — with L. Verde and R. Jiménez</div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-date">2025 · Invited talk</div>
-        <div class="timeline-role">"Gravitational Duals from Equations of State"</div>
-        <div class="timeline-place">Workshop "New Insights in Black Hole Physics from Holography" · IFT, Madrid</div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-date">2025 · Poster</div>
-        <div class="timeline-role">"Gravitational Duals from Equations of State"</div>
-        <div class="timeline-place">"Gravity — New Quantum and String Perspectives" · Benasque, Spain</div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-date">2025 · Oral</div>
-        <div class="timeline-role">"Gravitational Duals from Equations of State"</div>
-        <div class="timeline-place">Theoretical Physics Department, University of Florence</div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-date">2025 · Gong show</div>
-        <div class="timeline-role">"Gravitational duals from equations of state"</div>
-        <div class="timeline-place">Iberian Strings 2025 · Bizkaia Aretoa, Bilbao</div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-date">2024 · Seminar</div>
-        <div class="timeline-role">"Gravitational duals from equations of state"</div>
-        <div class="timeline-place">Gran Sasso Science Institute, L'Aquila</div>
+        <div class="timeline-date">2025 · Video</div>
+        <div class="timeline-role">"The Denario Project: Modular Automation of Scientific Research"</div>
+        <div class="timeline-place">
+          <a href="https://www.youtube.com/watch?v=4PRsQcfhKkI" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+        </div>
       </div>
 
     </div>
@@ -1348,12 +1309,10 @@
         <span class="badge">Julia</span>
         <span class="badge">Wolfram Mathematica</span>
         <span class="badge">C++</span>
-        <span class="badge">Matlab</span>
         <span class="badge indigo">PINNs</span>
         <span class="badge indigo">Deep Learning</span>
         <span class="badge indigo">Spectral Methods</span>
         <span class="badge indigo">HPC Clusters</span>
-        <span class="badge green">Differential Geometry</span>
         <span class="badge green">QFT</span>
         <span class="badge green">GR</span>
         <span class="badge green">Numerical Relativity</span>
@@ -1361,41 +1320,10 @@
         <span class="badge">Git</span>
         <span class="badge">Spanish (native)</span>
         <span class="badge">English (fluent)</span>
-        <span class="badge">French (basic)</span>
       </div>
-    </div>
-
-    <p class="cv-label">Media &amp; outreach</p>
-    <div class="timeline">
-
-      <div class="timeline-item">
-        <div class="timeline-date">October 2025 · Press</div>
-        <div class="timeline-role">Research featured in the Spanish national press</div>
-        <div class="timeline-place">
-          <em>La Vanguardia</em> — "UB researchers develop new AI techniques to solve complex equations in physics"
-        </div>
-        <div class="timeline-desc">
-          Coverage of the <em>Communications Physics</em> paper on multi-head unimodular PINNs, as lead author.
-          <a href="https://www.lavanguardia.com/launi/20251003/11120775/investigadores-ub-desarrollan-nuevas-tecnicas-inteligencia-artificial-resolver-ecuaciones-complejas-fisica.html" target="_blank" rel="noopener">Read the article ↗</a>
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-date">2025 · Video</div>
-        <div class="timeline-role">"The Denario Project: Modular Automation of Scientific Research with Multi-Agent Systems"</div>
-        <div class="timeline-place">Video presentation</div>
-        <div class="timeline-desc">
-          <a href="https://www.youtube.com/watch?v=4PRsQcfhKkI" target="_blank" rel="noopener">Watch on YouTube ↗</a>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="pub-links" style="margin-top:1.6rem;">
-      <a class="pub-link pdf" href="Pedro_Tarancon_Alvarez_CV.pdf" target="_blank" rel="noopener">📄 Download full CV (PDF)</a>
-      <span class="cite-badge">Last updated: July 2026</span>
     </div>
   </section>
+
 
   <!-- ── Contact ────────────────────────────────────────────── -->
   <section id="contact" class="reveal">
@@ -1516,15 +1444,23 @@
     });
   }
 
-  const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-      }
-    });
-  }, { threshold: 0.18, rootMargin: '0px 0px -10% 0px' });
+  // Reveal on scroll. Use threshold 0 and let rootMargin set the trigger point:
+  // a ratio-based threshold can never be met by a section taller than the
+  // viewport, which would leave that section stuck at opacity 0.
+  if ('IntersectionObserver' in window) {
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          sectionObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
 
-  sections.forEach((section) => sectionObserver.observe(section));
+    sections.forEach((section) => sectionObserver.observe(section));
+  } else {
+    sections.forEach((section) => section.classList.add('is-visible'));
+  }
 
   function updateActiveTabByScroll() {
     const navH = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'));
