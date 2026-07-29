@@ -670,39 +670,6 @@
     .cv-download-btn:hover { background: rgba(52, 211, 153, 0.22); text-decoration: none; }
     .cv-download-btn:focus-visible { outline: 2px solid var(--accent3); outline-offset: 2px; }
 
-    .cv-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 0.7rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .cv-stat {
-      padding: 0.85rem 1rem;
-      border: 1px solid rgba(56, 189, 248, 0.14);
-      border-radius: 6px;
-      background: rgba(15, 23, 42, 0.42);
-      text-align: center;
-    }
-
-    .cv-stat-num {
-      display: block;
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      line-height: 1.2;
-    }
-
-    .cv-stat-label {
-      display: block;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      margin-top: 0.15rem;
-    }
-
     .cv-more {
       font-size: 0.9rem;
       color: #64748b;
@@ -1152,13 +1119,6 @@
       <a class="cv-download-btn" href="Pedro_Tarancon_Alvarez_CV.pdf" target="_blank" rel="noopener">↓ Download CV (PDF)</a>
     </div>
 
-    <div class="cv-stats">
-      <div class="cv-stat"><span class="cv-stat-num">7</span><span class="cv-stat-label">Publications</span></div>
-      <div class="cv-stat"><span class="cv-stat-num">9</span><span class="cv-stat-label">Talks &amp; posters</span></div>
-      <div class="cv-stat"><span class="cv-stat-num">2</span><span class="cv-stat-label">Research stays</span></div>
-      <div class="cv-stat"><span class="cv-stat-num">20+</span><span class="cv-stat-label">Schools &amp; workshops</span></div>
-    </div>
-
     <p class="cv-label">PhD supervision</p>
     <div class="supervisor-row" style="margin-bottom:1.2rem;">
       <div class="supervisor-card">
@@ -1504,6 +1464,18 @@
 
 
   /* ══════════════════════════════════════════════════════════
+     HERO ANIMATION SCHEDULING
+     The two hero canvases are only visible inside the hero. Each
+     registers start/stop here so they can be parked while the hero is
+     off screen — otherwise they keep repainting behind the whole page
+     and make scrolling stutter.
+  ══════════════════════════════════════════════════════════ */
+  const heroAnimations = [];
+  const prefersReducedMotion =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+
+  /* ══════════════════════════════════════════════════════════
      ISOMETRIC SPACETIME GRID — 2D SLICE VIEWED IN 3D
      Grid lives in XY plane; perturbations displace Z upward.
      Isometric projection: X→right-down, Y→left-down, Z→up.
@@ -1815,6 +1787,30 @@
     // Pre-allocate z buffer
     const zBuf = new Float32Array((COLS + 1) * (ROWS + 1));
 
+    // Scratch buffers for the tinted segments of one row, reused every frame
+    // so the batching below allocates nothing per frame.
+    const PLAIN_STROKE = 'rgba(56,189,248,0.07)';
+    // A tint whose alpha lands within this much of the plain 0.07 is
+    // indistinguishable on screen, so it joins the batch instead of paying
+    // for its own stroke call.
+    const TINT_MIN_ALPHA = 0.09;
+    const tintX0 = new Float64Array(COLS + 2);
+    const tintY0 = new Float64Array(COLS + 2);
+    const tintX1 = new Float64Array(COLS + 2);
+    const tintY1 = new Float64Array(COLS + 2);
+    const tintC  = new Array(COLS + 2);
+    let tintN = 0;
+
+    function strokeTinted(ctx) {
+      for (let i = 0; i < tintN; i++) {
+        ctx.beginPath();
+        ctx.moveTo(tintX0[i], tintY0[i]);
+        ctx.lineTo(tintX1[i], tintY1[i]);
+        ctx.strokeStyle = tintC[i];
+        ctx.stroke();
+      }
+    }
+
     let lastT = null;
 
     function drawGrid(ts) {
@@ -1923,9 +1919,18 @@
 
       // Draw back-to-front for correct iso painter's order
       // In iso view: back = low col+row, front = high col+row
-      // Draw row-by-row from back row to front
+      // Draw row-by-row from back row to front.
+      //
+      // Most segments are far from any perturbation and share one flat
+      // colour, so they are batched into a single path per row and stroked
+      // once. Only the tinted segments near a perturbation need their own
+      // stroke call. Same pixels, ~1600 stroke calls per frame down to ~60.
+      ctx.lineWidth = 0.65;
       for (let row = 0; row <= ROWS; row++) {
         // Horizontal lines (varying col, fixed row)
+        let plain = false;
+        tintN = 0;
+        ctx.beginPath();
         for (let col = 0; col < COLS; col++) {
           const z0 = zBuf[row * (COLS + 1) + col];
           const z1 = zBuf[row * (COLS + 1) + col + 1];
@@ -1934,23 +1939,27 @@
 
           // Color from midpoint
           const cm = gaussColor(col + 0.5, row, W, H);
-          let stroke;
-          if (cm) {
-            const a = Math.min(cm[3] * 0.65 + 0.07, 0.60);
-            stroke = `rgba(${cm[0].toFixed(0)},${cm[1].toFixed(0)},${cm[2].toFixed(0)},${a.toFixed(3)})`;
+          const aH = cm ? Math.min(cm[3] * 0.65 + 0.07, 0.60) : 0;
+          if (cm && aH >= TINT_MIN_ALPHA) {
+            const a = aH;
+            tintX0[tintN] = p0.x; tintY0[tintN] = p0.y;
+            tintX1[tintN] = p1.x; tintY1[tintN] = p1.y;
+            tintC[tintN] = `rgba(${cm[0].toFixed(0)},${cm[1].toFixed(0)},${cm[2].toFixed(0)},${a.toFixed(3)})`;
+            tintN++;
           } else {
-            stroke = 'rgba(56,189,248,0.07)';
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(p1.x, p1.y);
+            plain = true;
           }
-
-          ctx.beginPath();
-          ctx.moveTo(p0.x, p0.y);
-          ctx.lineTo(p1.x, p1.y);
-          ctx.strokeStyle = stroke;
-          ctx.lineWidth = 0.65;
-          ctx.stroke();
         }
+        if (plain) { ctx.strokeStyle = PLAIN_STROKE; ctx.stroke(); }
+        strokeTinted(ctx);
+
         // Vertical lines (fixed col = row index, varying row up to current)
         if (row < ROWS) {
+          plain = false;
+          tintN = 0;
+          ctx.beginPath();
           for (let col = 0; col <= COLS; col++) {
             const z0 = zBuf[row       * (COLS + 1) + col];
             const z1 = zBuf[(row + 1) * (COLS + 1) + col];
@@ -1958,21 +1967,21 @@
             const p1 = project(col, row + 1, z1, W, H);
 
             const cm = gaussColor(col, row + 0.5, W, H);
-            let stroke;
-            if (cm) {
-              const a = Math.min(cm[3] * 0.55 + 0.07, 0.55);
-              stroke = `rgba(${cm[0].toFixed(0)},${cm[1].toFixed(0)},${cm[2].toFixed(0)},${a.toFixed(3)})`;
+            const aV = cm ? Math.min(cm[3] * 0.55 + 0.07, 0.55) : 0;
+            if (cm && aV >= TINT_MIN_ALPHA) {
+              const a = aV;
+              tintX0[tintN] = p0.x; tintY0[tintN] = p0.y;
+              tintX1[tintN] = p1.x; tintY1[tintN] = p1.y;
+              tintC[tintN] = `rgba(${cm[0].toFixed(0)},${cm[1].toFixed(0)},${cm[2].toFixed(0)},${a.toFixed(3)})`;
+              tintN++;
             } else {
-              stroke = 'rgba(56,189,248,0.07)';
+              ctx.moveTo(p0.x, p0.y);
+              ctx.lineTo(p1.x, p1.y);
+              plain = true;
             }
-
-            ctx.beginPath();
-            ctx.moveTo(p0.x, p0.y);
-            ctx.lineTo(p1.x, p1.y);
-            ctx.strokeStyle = stroke;
-            ctx.lineWidth = 0.65;
-            ctx.stroke();
           }
+          if (plain) { ctx.strokeStyle = PLAIN_STROKE; ctx.stroke(); }
+          strokeTinted(ctx);
         }
       }
 
@@ -2031,10 +2040,23 @@
         ctx.restore();
       }
 
-      requestAnimationFrame(drawGrid);
+      rafId = requestAnimationFrame(drawGrid);
     }
 
-    requestAnimationFrame(drawGrid);
+    let rafId = null;
+    heroAnimations.push({
+      start() {
+        if (rafId !== null) return;
+        lastT = null;                    // dt is clamped, so resuming is seamless
+        rafId = requestAnimationFrame(drawGrid);
+      },
+      stop() {
+        if (rafId === null) return;
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      },
+      drawOnce() { drawGrid(performance.now()); this.stop(); },
+    });
   })();
 
 
@@ -2128,6 +2150,26 @@
         const steps = Math.max(60, Math.round((2 * halfSpan / (2 * Math.PI)) * ARC_STEPS));
         const dTheta = (2 * halfSpan) / steps;
 
+        // The old per-segment linear gradient always ran straight outward
+        // from the photo centre, which makes it the *same* gradient for every
+        // segment of this wavelet — so build one radial gradient here and let
+        // globalAlpha carry the per-segment Gaussian weight. Identical pixels,
+        // one gradient per wavelet instead of one per segment.
+        const grad = ctx.createRadialGradient(
+          cx, cy, PHOTO_R - 2,
+          cx, cy, PHOTO_R + w.width + 2
+        );
+        grad.addColorStop(0,    `rgba(${w.r},${w.g},${w.b},0)`);
+        grad.addColorStop(0.15, `rgba(${w.r},${w.g},${w.b},0.9)`);
+        grad.addColorStop(0.5,  `rgba(${w.r},${w.g},${w.b},1)`);
+        grad.addColorStop(0.85, `rgba(${w.r},${w.g},${w.b},0.6)`);
+        grad.addColorStop(1,    `rgba(${w.r},${w.g},${w.b},0)`);
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = w.width + 6;
+        ctx.lineCap = 'butt';
+
+        const arcR = PHOTO_R + w.width / 2;
         for (let s = 0; s < steps; s++) {
           // Angle at the midpoint of this segment
           const theta = (w.angle - halfSpan) + (s + 0.5) * dTheta;
@@ -2136,44 +2178,60 @@
           const alpha    = peakAlpha * gaussW;
           if (alpha < 0.004) continue;
 
-          // Segment endpoints on the circle
-          const t0 = theta - dTheta * 0.5;
-          const t1 = theta + dTheta * 0.5;
-          const x0 = cx + PHOTO_R * Math.cos(t0);
-          const y0 = cy + PHOTO_R * Math.sin(t0);
-          const x1 = cx + PHOTO_R * Math.cos(t1);
-          const y1 = cy + PHOTO_R * Math.sin(t1);
-
-          // Also draw a glow band radiating outward
-          // Use a short radial gradient for each small segment
-          const midCos = Math.cos(theta);
-          const midSin = Math.sin(theta);
-          const r0x = cx + (PHOTO_R - 2)           * midCos;
-          const r0y = cy + (PHOTO_R - 2)           * midSin;
-          const r1x = cx + (PHOTO_R + w.width + 2) * midCos;
-          const r1y = cy + (PHOTO_R + w.width + 2) * midSin;
-
-          const grad = ctx.createLinearGradient(r0x, r0y, r1x, r1y);
-          grad.addColorStop(0,   `rgba(${w.r},${w.g},${w.b},0)`);
-          grad.addColorStop(0.15, `rgba(${w.r},${w.g},${w.b},${(alpha * 0.9).toFixed(4)})`);
-          grad.addColorStop(0.5,  `rgba(${w.r},${w.g},${w.b},${(alpha).toFixed(4)})`);
-          grad.addColorStop(0.85, `rgba(${w.r},${w.g},${w.b},${(alpha * 0.6).toFixed(4)})`);
-          grad.addColorStop(1,   `rgba(${w.r},${w.g},${w.b},0)`);
-
-          // Draw a fat stroked segment to represent this arc slice
+          ctx.globalAlpha = alpha;
           ctx.beginPath();
-          ctx.arc(cx, cy, PHOTO_R + w.width / 2, t0, t1);
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = w.width + 6;
-          ctx.lineCap = 'butt';
+          ctx.arc(cx, cy, arcR, theta - dTheta * 0.5, theta + dTheta * 0.5);
           ctx.stroke();
         }
+        ctx.globalAlpha = 1;
       }
 
-      requestAnimationFrame(draw);
+      rafId = requestAnimationFrame(draw);
     }
 
-    requestAnimationFrame(draw);
+    let rafId = null;
+    heroAnimations.push({
+      start() {
+        if (rafId !== null) return;
+        lastT = null;
+        rafId = requestAnimationFrame(draw);
+      },
+      stop() {
+        if (rafId === null) return;
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      },
+      drawOnce() { draw(performance.now()); this.stop(); },
+    });
+  })();
+
+
+  /* ══════════════════════════════════════════════════════════
+     Run the hero canvases only while the hero is actually on screen,
+     and pause them when the tab is hidden.
+  ══════════════════════════════════════════════════════════ */
+  (function () {
+    if (prefersReducedMotion) {
+      heroAnimations.forEach(a => a.drawOnce());
+      return;
+    }
+
+    let heroOnScreen = true;
+
+    function sync() {
+      const run = heroOnScreen && !document.hidden;
+      heroAnimations.forEach(a => (run ? a.start() : a.stop()));
+    }
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        entries.forEach(e => { heroOnScreen = e.isIntersecting; });
+        sync();
+      }, { threshold: 0 }).observe(heroSection);
+    }
+
+    document.addEventListener('visibilitychange', sync);
+    sync();
   })();
 </script>
 
