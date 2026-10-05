@@ -601,6 +601,7 @@
     .timeline-role  { font-size: 1.05rem; font-weight: 600; color: var(--text); }
     .timeline-place { font-size: 0.96rem; color: var(--muted); margin-top: 0.12rem; }
     .timeline-desc  { font-size: 0.94rem; color: #64748b; margin-top: 0.45rem; line-height: 1.68; }
+    .timeline-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
 
     .timeline-grade {
       display: inline-block;
@@ -673,12 +674,18 @@
     .cv-download-btn:hover { background: rgba(52, 211, 153, 0.22); text-decoration: none; }
     .cv-download-btn:focus-visible { outline: 2px solid var(--accent3); outline-offset: 2px; }
 
-    .cv-more {
-      font-size: 0.9rem;
-      color: #64748b;
-      margin-top: 0.7rem;
-      font-style: italic;
+    /* Dense year + entry list, for CV items too numerous for the timeline */
+    .compact-list { list-style: none; display: grid; gap: 0.6rem; }
+    .compact-list li {
+      display: grid;
+      grid-template-columns: 6.8rem 1fr;
+      gap: 0.9rem;
+      font-size: 0.94rem;
+      color: var(--muted);
+      line-height: 1.55;
     }
+    .compact-list .cl-year { color: var(--accent); font-weight: 600; font-size: 0.86rem; letter-spacing: 0.04em; padding-top: 0.1rem; }
+    .compact-list .cl-what { color: var(--text); font-weight: 500; }
 
     /* ── Contact ──────────────────────────────────────────────── */
     .contact-row {
@@ -799,6 +806,7 @@
         gap: 0.45rem;
         letter-spacing: 0.11em;
       }
+      .compact-list li { grid-template-columns: 5.4rem 1fr; gap: 0.6rem; font-size: 0.9rem; }
       main section::after {
         left: 1rem;
         right: 1rem;
@@ -1301,9 +1309,15 @@
         <div class="timeline-place">Comunidad de Madrid · for outstanding academic performance</div>
       </div>
 
+      <div class="timeline-item">
+        <div class="timeline-date">2021 – 2022</div>
+        <div class="timeline-role">Collaboration Grant</div>
+        <div class="timeline-place">Spanish Ministry of Education · for undergraduate research at UCM</div>
+      </div>
+
     </div>
 
-    <p class="cv-label">Selected talks</p>
+    <p class="cv-label">Talks &amp; posters</p>
     <div class="timeline">
 
       <div class="timeline-item">
@@ -1313,36 +1327,113 @@
       </div>
 
       <div class="timeline-item">
-        <div class="timeline-date">2026 · Poster</div>
+        <div class="timeline-date">January 2026 · Poster</div>
         <div class="timeline-role">"Non-conformal obstructions to bubble expansion"</div>
         <div class="timeline-place">Iberian Strings 2026 · IGFAE, Santiago de Compostela</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/iberian-strings-2026-poster.pdf" target="_blank" rel="noopener">Poster (PDF)</a>
+        </div>
       </div>
 
       <div class="timeline-item">
-        <div class="timeline-date">2026 · Poster</div>
+        <div class="timeline-date">April 2026 · Poster</div>
         <div class="timeline-role">"Learning embeddings of non-linear PDEs: the Burgers' equation"</div>
         <div class="timeline-place">AI &amp; PDE: ICLR 2026 Workshop · Rio de Janeiro</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/iclr-2026-ai-pde-poster.pdf" target="_blank" rel="noopener">Poster (PDF)</a>
+        </div>
       </div>
 
       <div class="timeline-item">
-        <div class="timeline-date">2025 · Invited talk</div>
+        <div class="timeline-date">October 2025 · Oral</div>
+        <div class="timeline-role">"The Denario Project: Deep Knowledge Agents for Scientific Discovery"</div>
+        <div class="timeline-place">Cross-Collserola PhD Meeting · IFAE, Universitat Autònoma de Barcelona</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/cross-collserola-2025-denario.pdf" target="_blank" rel="noopener">Slides (PDF)</a>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">September 2025 · Internal seminar</div>
+        <div class="timeline-role">"The Denario Project" (with Licia Verde and Raúl Jiménez)</div>
+        <div class="timeline-place">ICCUB · Universitat de Barcelona</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">July 2025 · Poster</div>
+        <div class="timeline-role">"Gravitational Duals from Equations of State"</div>
+        <div class="timeline-place">"Gravity — New Quantum and String Perspectives" · Centro de Ciencias de Benasque Pedro Pascual</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">June 2025 · Invited talk</div>
         <div class="timeline-role">"Gravitational Duals from Equations of State"</div>
         <div class="timeline-place">"New Insights in Black Hole Physics from Holography" · IFT, Madrid</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/ift-madrid-2025-gravitational-duals.pdf" target="_blank" rel="noopener">Slides (PDF)</a>
+        </div>
       </div>
 
       <div class="timeline-item">
-        <div class="timeline-date">2025 · Oral</div>
-        <div class="timeline-role">"The Denario Project: Deep Knowledge Agents for Scientific Discovery"</div>
-        <div class="timeline-place">Cross-Collserola PhD Meeting · IFAE, Barcelona</div>
+        <div class="timeline-date">May 2025 · Oral</div>
+        <div class="timeline-role">"Gravitational Duals from Equations of State"</div>
+        <div class="timeline-place">Theoretical Physics Department · University of Florence</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/florence-2025-gravitational-duals.pdf" target="_blank" rel="noopener">Slides (PDF)</a>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">January 2025 · Gong show</div>
+        <div class="timeline-role">"Gravitational Duals from Equations of State"</div>
+        <div class="timeline-place">Iberian Strings 2025 · Bizkaia Aretoa, Bilbao</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/iberian-strings-2025-gong-show.pdf" target="_blank" rel="noopener">Slides (PDF)</a>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">October 2024 · Seminar</div>
+        <div class="timeline-role">"Gravitational Duals from Equations of State"</div>
+        <div class="timeline-place">"The Complexity of the Cosmos" · Gran Sasso Science Institute, L'Aquila</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/gssi-laquila-2024-gravitational-duals.pdf" target="_blank" rel="noopener">Slides (PDF)</a>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">June 2022 · Invited speaker</div>
+        <div class="timeline-role">Seminar presenting the MOSAIC project</div>
+        <div class="timeline-place">X Jornadas de Introducción a la Investigación · Universidad Complutense de Madrid</div>
       </div>
 
     </div>
-    <p class="cv-more">
-      The PDF lists every talk, including seminars at the University of Florence and the Gran Sasso
-      Science Institute. It also lists the schools and workshops I have attended: Simons
-      Collaboration for the Geometry of Flows meetings at IAS Princeton, ETH Zurich, the Flatiron
-      Institute and NYU, the CERN Winter School, GGI Florence, Benasque and APC Paris.
-    </p>
+
+    <p class="cv-label">Schools, workshops &amp; research stays</p>
+    <ul class="compact-list">
+      <li><span class="cl-year">2026</span><span><span class="cl-what">Workshop on Holography and Dense Matter</span> · APC, Paris</span></li>
+      <li><span class="cl-year">2026</span><span><span class="cl-what">Geometry of Flows meeting</span> · New York University</span></li>
+      <li><span class="cl-year">2026</span><span><span class="cl-what">Simons Collaboration for the Geometry of Flows retreat: Explainability in ML &amp; Multi-Agent Inference</span> · Canfranc Underground Laboratory</span></li>
+      <li><span class="cl-year">2026</span><span><span class="cl-what">Geometry of Flows Workshop</span> · Flatiron Institute, New York</span></li>
+      <li><span class="cl-year">2026</span><span><span class="cl-what">AI &amp; PDE: ICLR 2026 Workshop on AI and Partial Differential Equations</span> · Rio de Janeiro</span></li>
+      <li><span class="cl-year">2026</span><span><span class="cl-what">Iberian Strings 2026</span> · IGFAE, Santiago de Compostela</span></li>
+      <li><span class="cl-year">2025</span><span><span class="cl-what">ETH-ITS Workshop "Geometry of Flows"</span> · ETH Zurich</span></li>
+      <li><span class="cl-year">2025</span><span><span class="cl-what">Simons Collaboration for the Geometry of Flows meeting</span> · Institute for Advanced Study, Princeton</span></li>
+      <li><span class="cl-year">2025</span><span><span class="cl-what">"Gravity — New Quantum and String Perspectives"</span> · Centro de Ciencias de Benasque Pedro Pascual</span></li>
+      <li><span class="cl-year">2025</span><span><span class="cl-what">Workshop "New Insights in Black Hole Physics from Holography"</span> · IFT, Madrid</span></li>
+      <li><span class="cl-year">2025</span><span><span class="cl-what">GGI School on asymptotic symmetries and flat holography</span> · Galileo Galilei Institute, Florence</span></li>
+      <li><span class="cl-year">2025</span><span><span class="cl-what">Iberian Strings 2025</span> · Bizkaia Aretoa, Bilbao</span></li>
+      <li><span class="cl-year">2024–2025</span><span><span class="cl-what">Barcelona Initiative for Gravitation (BIG) Meetings, 4th–7th</span> · Barcelona</span></li>
+      <li><span class="cl-year">2023, 2025</span><span><span class="cl-what">Cross-Collserola PhD Meeting in Astrophysics, Cosmology and Particles</span> · Barcelona</span></li>
+      <li><span class="cl-year">2024</span><span><span class="cl-what">"The Complexity of the Cosmos" and "Gravitational duals from equations of state"</span> · Gran Sasso Science Institute, L'Aquila</span></li>
+      <li><span class="cl-year">2024</span><span><span class="cl-what">COSMO CLASSIC 2024: future prospects for Cosmology</span> · Asiago</span></li>
+      <li><span class="cl-year">2024</span><span><span class="cl-what">New Frontiers in Strong Gravity</span> · Centro de Ciencias de Benasque Pedro Pascual</span></li>
+      <li><span class="cl-year">2024</span><span><span class="cl-what">Research stay with Pavlos Protopapas, StellarDNN Lab</span> · SEAS, Harvard University (April – July)</span></li>
+      <li><span class="cl-year">2024</span><span><span class="cl-what">GGI School on Theoretical Aspects of Astroparticle Physics, Cosmology and Gravitation</span> · Florence (60 h)</span></li>
+      <li><span class="cl-year">2024</span><span><span class="cl-what">CERN Winter School on Supergravity, Strings and Gauge Theory</span> · CERN, Geneva</span></li>
+      <li><span class="cl-year">2024</span><span><span class="cl-what">ComputeFest 2024: Physics-Informed Neural Networks</span> · Harvard IACS (16 h)</span></li>
+      <li><span class="cl-year">2023–2024</span><span><span class="cl-what">ICCUB Machine Learning Workshop (2023) and ICCUB Winter Meeting (2024)</span> · Barcelona</span></li>
+    </ul>
 
     <p class="cv-label">Teaching</p>
     <div class="timeline">
@@ -1404,6 +1495,11 @@
       </div>
 
       <div class="timeline-item">
+        <div class="timeline-role"><a href="https://github.com/pedrota2000/P2_ML_Lectures_public" target="_blank" rel="noopener">P2_ML_Lectures_public</a></div>
+        <div class="timeline-place">Lecture notes and exercises for the Master's course.</div>
+      </div>
+
+      <div class="timeline-item">
         <div class="timeline-role"><a href="https://github.com/pedrota2000/athenak" target="_blank" rel="noopener">AthenaK</a> (contributor)</div>
         <div class="timeline-place">Turbulence forcing in the performance-portable astrophysical MHD code.</div>
       </div>
@@ -1445,19 +1541,28 @@
         <span class="badge indigo">Deep Learning</span>
         <span class="badge indigo">Transfer Learning</span>
         <span class="badge indigo">Inverse Problems</span>
+        <span class="badge indigo">Dimensionality Reduction</span>
         <span class="badge indigo">Spectral Methods</span>
         <span class="badge indigo">HPC Clusters</span>
+        <span class="badge green">AdS/CFT &amp; Holography</span>
         <span class="badge green">QFT</span>
         <span class="badge green">GR</span>
         <span class="badge green">Numerical Relativity (AdS)</span>
         <span class="badge green">Relativistic Hydrodynamics</span>
+        <span class="badge green">Cosmology</span>
         <span class="badge">LaTeX</span>
         <span class="badge">Git</span>
         <span class="badge">Spanish (native)</span>
-        <span class="badge">English (fluent)</span>
-        <span class="badge">French (basic)</span>
+        <span class="badge">English (fluent · B2)</span>
+        <span class="badge">French (basic · A2)</span>
       </div>
     </div>
+
+    <p class="cv-label">Beyond research</p>
+    <p class="contact-note">
+      Amateur astronomy (telescope operation and calibration), piano (professional-level training at
+      the Conservatorio Profesional de Música Jacinto Guerrero), reading and music.
+    </p>
   </section>
 
 
