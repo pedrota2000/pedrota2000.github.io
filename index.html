@@ -48,8 +48,13 @@
   }
   </script>
 
+  <!-- Fonts load via <link> rather than an @import inside <style>, so the
+       browser finds them while parsing the head instead of after it. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap">
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
 
     :root {
       --bg0: #020617;
@@ -256,8 +261,10 @@
       top: 0; left: 0; right: 0;
       z-index: 200;
       height: var(--nav-h);
-      background: rgba(4, 10, 22, 0.93);
-      backdrop-filter: blur(14px);
+      /* Near-opaque instead of a backdrop blur: at 93% opacity the blur was
+         barely visible, yet it re-blurred the strip under the bar on every
+         scrolled frame. */
+      background: rgba(4, 10, 22, 0.96);
       border-bottom: 1px solid var(--border);
       box-shadow: var(--shadow-soft);
       display: flex;
@@ -342,7 +349,6 @@
       border-bottom: 1px solid rgba(15, 23, 42, 0.9);
       scroll-margin-top: calc(var(--nav-h) + 20px);
       overflow: clip;
-      animation: fadeUp 0.42s ease;
       isolation: isolate;
     }
 
@@ -388,22 +394,18 @@
       pointer-events: none;
     }
 
+    /* Opacity and translation only: both run on the compositor. A blur or
+       scale here would re-rasterise whole sections, some several screens
+       tall, on every frame of the reveal. */
     .reveal {
       opacity: 0;
-      transform: translateY(22px) scale(0.992);
-      filter: blur(5px);
-      transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+      transform: translateY(22px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
     }
 
     .reveal.is-visible {
       opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
+      transform: none;
     }
 
     /* ── Shared components ────────────────────────────────────── */
@@ -818,7 +820,7 @@
   <div class="hero-photo-wrap">
     <!-- Gaussian wavelet canvas -->
     <canvas id="wavelet-canvas"></canvas>
-    <img src="profile.jpg" alt="Pedro Tarancón-Álvarez" class="hero-photo">
+    <img src="profile.jpg" alt="Pedro Tarancón-Álvarez" class="hero-photo" width="220" height="220" fetchpriority="high" decoding="async">
   </div>
 
   <h1 class="hero-name">Pedro Tarancón-Álvarez</h1>
@@ -844,7 +846,7 @@
 
 <!-- ══ COMPACT STICKY NAV ═════════════════════════════════════════ -->
 <nav class="compact-nav" id="compactNav">
-  <img src="profile.jpg" alt="" class="nav-photo">
+  <img src="profile.jpg" alt="" class="nav-photo" width="36" height="36" decoding="async">
   <span class="nav-name">Pedro Tarancón-Álvarez</span>
   <div class="nav-tabs">
     <button class="tab active" data-target="bio">About</button>
@@ -1645,6 +1647,9 @@
      and make scrolling stutter.
   ══════════════════════════════════════════════════════════ */
   const heroAnimations = [];
+  // Minimum time between hero frames: every frame on a 60 Hz screen, every
+  // other frame on 120-144 Hz ones, where full rate buys nothing visible.
+  const MIN_FRAME_MS = 12;
   const prefersReducedMotion =
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1658,9 +1663,14 @@
     const canvas = document.getElementById('spacetime-canvas');
     const ctx    = canvas.getContext('2d');
 
+    // Set once a frame with no waves, black hole or flash has been drawn: the
+    // grid is then flat and static, so later frames can skip drawing it.
+    let staticDrawn = false;
+
     function resize() {
       canvas.width  = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
+      staticDrawn = false;               // resizing clears the canvas
     }
     resize();
     window.addEventListener('resize', resize);
@@ -1722,6 +1732,10 @@
       };
     }
 
+    // Waiting for a wave to die out takes 15-20 s, so a moving mouse can pile
+    // up a hundred of them. Past this many, the oldest (and faintest) goes.
+    const MAX_WAVES = 40;
+
     function spawnPerturbAt(col, row, opts = {}) {
       // Clamp to interior grid
       const oc = Math.max(1.5, Math.min(COLS - 1.5, col));
@@ -1730,15 +1744,26 @@
       const speedMul = opts.speedMul ?? 1;
       const sigmaMul = opts.sigmaMul ?? 1;
       const decayMul = opts.decayMul ?? 1;
+      const sigma = (1.4 + Math.random() * 1.2) * sigmaMul;
+      if (perturbs.length >= MAX_WAVES) perturbs.shift();
       perturbs.push({
         ox: oc,
         oy: or,
         t:  0,
         speed:     (1.8 + Math.random() * 1.4) * speedMul,
         amplitude: (22  + Math.random() * 32) * ampMul,
-        sigma:     (1.4 + Math.random() * 1.2) * sigmaMul,
+        sigma,
         decay:     (0.22 + Math.random() * 0.18) * decayMul,
-        tint:      Math.floor(Math.random() * TINTS.length)
+        tint:      Math.floor(Math.random() * TINTS.length),
+        // The ring's Gaussian envelope is below e^-8 beyond 4 sigma of the
+        // front, so a vertex further away than that gets nothing from it.
+        reach:     4 * sigma,
+        inv2s2:    1 / (2 * sigma * sigma),
+        // Distance to the farthest grid corner: once the front is a reach
+        // beyond it, the wave has left the grid.
+        maxDist:   Math.hypot(Math.max(oc, COLS - oc), Math.max(or, ROWS - or)),
+        // Per-frame values, filled in by prepareWaves()
+        front: 0, zAmp: 0, cAmp: 0
       });
     }
 
@@ -1910,17 +1935,31 @@
       return 1 - Math.exp(-t / 0.18);
     }
 
-    function gaussZ(p, col, row) {
-      const dx = col - p.ox;
-      const dy = row - p.oy;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const wavefront = p.t * p.speed;
-      const ringDist  = dist - wavefront;
-      const env   = Math.exp(-(ringDist * ringDist) / (2 * p.sigma * p.sigma));
-      const diffusionDecay = p.decay + diffusionBoost * 0.62;
-      const spatialSpread = 0.06 + diffusionBoost * 0.05;
-      const damp  = Math.exp(-diffusionDecay * p.t) * Math.exp(-dist * spatialSpread);
-      return env * damp * fadeIn(p.t) * p.amplitude;
+    // Everything in a wave's height and colour that depends only on time is
+    // the same for every vertex, so work it out once per frame here instead
+    // of inside the per-vertex loops.
+    let spatialSpread = 0.06;
+
+    function prepareWaves() {
+      spatialSpread = 0.06 + diffusionBoost * 0.05;
+      for (const p of perturbs) {
+        p.front = p.t * p.speed;
+        p.cAmp  = Math.exp(-(p.decay + diffusionBoost * 0.62) * p.t) * fadeIn(p.t);
+        p.zAmp  = p.cAmp * p.amplitude;
+      }
+    }
+
+    function gaussZ(col, row) {
+      let z = 0;
+      for (const p of perturbs) {
+        const dx = col - p.ox;
+        const dy = row - p.oy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const ringDist = dist - p.front;
+        if (ringDist > p.reach || ringDist < -p.reach) continue;
+        z += Math.exp(-ringDist * ringDist * p.inv2s2 - dist * spatialSpread) * p.zAmp;
+      }
+      return z;
     }
 
     function blackHoleZ(col, row) {
@@ -1940,68 +1979,92 @@
       return sink;
     }
 
-    function gaussColor(col, row, W, H) {
+    // Tint at a grid point, written to tintR/G/B/A. Returns false where no
+    // wave is close enough to colour the line.
+    let tintR = 0, tintG = 0, tintB = 0, tintA = 0;
+
+    function gaussColor(col, row) {
       let rA = 0, gA = 0, bA = 0, wA = 0;
       for (const p of perturbs) {
         const dx = col - p.ox;
         const dy = row - p.oy;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const wf   = p.t * p.speed;
-        const rd   = dist - wf;
-        const env  = Math.exp(-(rd * rd) / (2 * p.sigma * p.sigma));
-        const damp = Math.exp(-(p.decay + diffusionBoost * 0.62) * p.t);
-        const w    = env * damp * fadeIn(p.t);
-        const [r, g, b] = TINTS[p.tint];
-        rA += r * w; gA += g * w; bA += b * w; wA += w;
+        const rd = Math.sqrt(dx * dx + dy * dy) - p.front;
+        if (rd > p.reach || rd < -p.reach) continue;
+        const w = Math.exp(-rd * rd * p.inv2s2) * p.cAmp;
+        const c = TINTS[p.tint];
+        rA += c[0] * w; gA += c[1] * w; bA += c[2] * w; wA += w;
       }
-      if (wA < 0.01) return null;
-      return [rA / wA, gA / wA, bA / wA, Math.min(wA * 1.2, 0.8)];
+      if (wA < 0.01) return false;
+      tintR = rA / wA; tintG = gA / wA; tintB = bA / wA;
+      tintA = Math.min(wA * 1.2, 0.8);
+      return true;
     }
 
-    // Pre-allocate z buffer
-    const zBuf = new Float32Array((COLS + 1) * (ROWS + 1));
+    // Projected screen position of every vertex, filled once per frame.
+    // Each vertex is shared by up to four segments, so projecting vertices
+    // rather than segment ends does a quarter of the work.
+    const NV = (COLS + 1) * (ROWS + 1);
+    const vx = new Float32Array(NV);
+    const vy = new Float32Array(NV);
 
-    // Scratch buffers for the tinted segments of one row, reused every frame
-    // so the batching below allocates nothing per frame.
     const PLAIN_STROKE = 'rgba(56,189,248,0.07)';
     // A tint whose alpha lands within this much of the plain 0.07 is
-    // indistinguishable on screen, so it joins the batch instead of paying
-    // for its own stroke call.
+    // indistinguishable on screen, so it joins the plain path.
     const TINT_MIN_ALPHA = 0.09;
-    const tintX0 = new Float64Array(COLS + 2);
-    const tintY0 = new Float64Array(COLS + 2);
-    const tintX1 = new Float64Array(COLS + 2);
-    const tintY1 = new Float64Array(COLS + 2);
-    const tintC  = new Array(COLS + 2);
-    let tintN = 0;
+
+    // Tinted segments are grouped by colour, quantized to 8 levels per
+    // channel and 0.02 in alpha (too fine to see on a 0.65px line), and each
+    // group is stroked once. Near a busy mouse trail that is a few dozen
+    // stroke calls a frame instead of well over a thousand.
+    const tintPaths = new Map();
+
+    function addTinted(alpha, i0, i1) {
+      const r = Math.min(31, Math.round(tintR / 8));
+      const g = Math.min(31, Math.round(tintG / 8));
+      const b = Math.min(31, Math.round(tintB / 8));
+      const a = Math.round(alpha * 50);
+      const key = ((r * 32 + g) * 32 + b) * 64 + a;
+      let path = tintPaths.get(key);
+      if (!path) { path = new Path2D(); tintPaths.set(key, path); }
+      path.moveTo(vx[i0], vy[i0]);
+      path.lineTo(vx[i1], vy[i1]);
+    }
 
     function strokeTinted(ctx) {
-      for (let i = 0; i < tintN; i++) {
-        ctx.beginPath();
-        ctx.moveTo(tintX0[i], tintY0[i]);
-        ctx.lineTo(tintX1[i], tintY1[i]);
-        ctx.strokeStyle = tintC[i];
-        ctx.stroke();
+      for (const [key, path] of tintPaths) {
+        const a = key % 64;
+        const b = Math.floor(key / 64) % 32;
+        const g = Math.floor(key / 2048) % 32;
+        const r = Math.floor(key / 65536);
+        ctx.strokeStyle = `rgba(${r * 8},${g * 8},${b * 8},${a / 50})`;
+        ctx.stroke(path);
       }
+      tintPaths.clear();
     }
 
     let lastT = null;
 
     function drawGrid(ts) {
+      if (lastT && ts - lastT < MIN_FRAME_MS) {
+        rafId = requestAnimationFrame(drawGrid);
+        return;
+      }
       if (!lastT) lastT = ts;
       const dt = Math.min((ts - lastT) / 1000, 0.05);
       lastT = ts;
 
       const W = canvas.width;
       const H = canvas.height;
-      ctx.clearRect(0, 0, W, H);
 
       // Advance perturbations
       for (let i = perturbs.length - 1; i >= 0; i--) {
         perturbs[i].t += dt;
         const p = perturbs[i];
-        // Cull when wave has passed completely and amplitude decayed
-        if (p.t * p.speed > COLS * 1.5 && Math.exp(-p.decay * p.t) < 0.005) {
+        // Cull once the ring has left the grid, or has decayed below a
+        // quarter-pixel of height and any visible tint.
+        const faded = Math.exp(-p.decay * p.t);
+        if (p.t * p.speed - p.reach > p.maxDist ||
+            (faded < 0.005 && faded * p.amplitude < 0.25)) {
           perturbs.splice(i, 1);
         }
       }
@@ -2081,83 +2144,64 @@
       // Flash fades quickly, leaving a soft afterglow.
       flashIntensity = Math.max(0, flashIntensity - dt * (recoveryTimer > 0 ? 1.55 : 4.8));
 
-      // Compute Z for every vertex
+      // With no waves, black hole or flash the grid is flat: once that frame
+      // is on the canvas, nothing changes until the mouse disturbs it again.
+      const quiet = perturbs.length === 0 && !blackHole && flashIntensity <= 0.002;
+      if (quiet && staticDrawn) {
+        rafId = requestAnimationFrame(drawGrid);
+        return;
+      }
+      staticDrawn = quiet;
+
+      ctx.clearRect(0, 0, W, H);
+      prepareWaves();
+
+      // Height and screen position of every vertex
       for (let row = 0; row <= ROWS; row++) {
         for (let col = 0; col <= COLS; col++) {
-          let z = 0;
-          for (const p of perturbs) z += gaussZ(p, col, row);
-          z += blackHoleZ(col, row);
-          zBuf[row * (COLS + 1) + col] = z;
+          const z = gaussZ(col, row) + blackHoleZ(col, row);
+          const p = project(col, row, z, W, H);
+          const k = row * (COLS + 1) + col;
+          vx[k] = p.x;
+          vy[k] = p.y;
         }
       }
 
-      // Draw back-to-front for correct iso painter's order
-      // In iso view: back = low col+row, front = high col+row
-      // Draw row-by-row from back row to front.
-      //
-      // Most segments are far from any perturbation and share one flat
-      // colour, so they are batched into a single path per row and stroked
-      // once. Only the tinted segments near a perturbation need their own
-      // stroke call. Same pixels, ~1600 stroke calls per frame down to ~60.
+      // Most segments are far from any wave and share one flat colour, so
+      // they all go into a single path stroked once. Tinted segments near a
+      // wave are grouped by colour (see addTinted).
       ctx.lineWidth = 0.65;
+      const plainPath = new Path2D();
       for (let row = 0; row <= ROWS; row++) {
-        // Horizontal lines (varying col, fixed row)
-        let plain = false;
-        tintN = 0;
-        ctx.beginPath();
+        // Horizontal lines (varying col, fixed row), coloured from the midpoint
         for (let col = 0; col < COLS; col++) {
-          const z0 = zBuf[row * (COLS + 1) + col];
-          const z1 = zBuf[row * (COLS + 1) + col + 1];
-          const p0 = project(col,     row, z0, W, H);
-          const p1 = project(col + 1, row, z1, W, H);
-
-          // Color from midpoint
-          const cm = gaussColor(col + 0.5, row, W, H);
-          const aH = cm ? Math.min(cm[3] * 0.65 + 0.07, 0.60) : 0;
-          if (cm && aH >= TINT_MIN_ALPHA) {
-            const a = aH;
-            tintX0[tintN] = p0.x; tintY0[tintN] = p0.y;
-            tintX1[tintN] = p1.x; tintY1[tintN] = p1.y;
-            tintC[tintN] = `rgba(${cm[0].toFixed(0)},${cm[1].toFixed(0)},${cm[2].toFixed(0)},${a.toFixed(3)})`;
-            tintN++;
+          const i0 = row * (COLS + 1) + col;
+          const aH = gaussColor(col + 0.5, row) ? Math.min(tintA * 0.65 + 0.07, 0.60) : 0;
+          if (aH >= TINT_MIN_ALPHA) {
+            addTinted(aH, i0, i0 + 1);
           } else {
-            ctx.moveTo(p0.x, p0.y);
-            ctx.lineTo(p1.x, p1.y);
-            plain = true;
+            plainPath.moveTo(vx[i0], vy[i0]);
+            plainPath.lineTo(vx[i0 + 1], vy[i0 + 1]);
           }
         }
-        if (plain) { ctx.strokeStyle = PLAIN_STROKE; ctx.stroke(); }
-        strokeTinted(ctx);
 
-        // Vertical lines (fixed col = row index, varying row up to current)
+        // Vertical lines (fixed col, from this row to the next)
         if (row < ROWS) {
-          plain = false;
-          tintN = 0;
-          ctx.beginPath();
           for (let col = 0; col <= COLS; col++) {
-            const z0 = zBuf[row       * (COLS + 1) + col];
-            const z1 = zBuf[(row + 1) * (COLS + 1) + col];
-            const p0 = project(col, row,     z0, W, H);
-            const p1 = project(col, row + 1, z1, W, H);
-
-            const cm = gaussColor(col, row + 0.5, W, H);
-            const aV = cm ? Math.min(cm[3] * 0.55 + 0.07, 0.55) : 0;
-            if (cm && aV >= TINT_MIN_ALPHA) {
-              const a = aV;
-              tintX0[tintN] = p0.x; tintY0[tintN] = p0.y;
-              tintX1[tintN] = p1.x; tintY1[tintN] = p1.y;
-              tintC[tintN] = `rgba(${cm[0].toFixed(0)},${cm[1].toFixed(0)},${cm[2].toFixed(0)},${a.toFixed(3)})`;
-              tintN++;
+            const i0 = row * (COLS + 1) + col;
+            const aV = gaussColor(col, row + 0.5) ? Math.min(tintA * 0.55 + 0.07, 0.55) : 0;
+            if (aV >= TINT_MIN_ALPHA) {
+              addTinted(aV, i0, i0 + COLS + 1);
             } else {
-              ctx.moveTo(p0.x, p0.y);
-              ctx.lineTo(p1.x, p1.y);
-              plain = true;
+              plainPath.moveTo(vx[i0], vy[i0]);
+              plainPath.lineTo(vx[i0 + COLS + 1], vy[i0 + COLS + 1]);
             }
           }
-          if (plain) { ctx.strokeStyle = PLAIN_STROKE; ctx.stroke(); }
-          strokeTinted(ctx);
         }
       }
+      ctx.strokeStyle = PLAIN_STROKE;
+      ctx.stroke(plainPath);
+      strokeTinted(ctx);
 
       if (blackHole) {
         const bhp = project(blackHole.col, blackHole.row, blackHoleZ(blackHole.col, blackHole.row), W, H);
@@ -2280,9 +2324,48 @@
       // random start angle
       const angle0  = Math.random() * 2 * Math.PI;
 
-      wavelets.push({ r: col.r, g: col.g, b: col.b,
-                      angle: angle0, sigma, speed, amp, decay, width, dir,
-                      age: 0 });
+      wavelets.push({ angle: angle0, speed, amp, decay, dir, age: 0,
+                      sprite: renderWavelet(col, sigma, width) });
+    }
+
+    // A wavelet only ever rotates and fades, so its shape is drawn once,
+    // centred on angle 0, into a small offscreen canvas. Each frame then
+    // costs one rotated drawImage instead of a hundred-odd gradient arcs.
+    function renderWavelet(col, sigma, width) {
+      const half = Math.ceil(PHOTO_R + width + 4);
+      const sprite = document.createElement('canvas');
+      sprite.width = sprite.height = 2 * half;
+      const sctx = sprite.getContext('2d');
+
+      // Draw from centre ± 3σ, as a series of arc segments whose alpha
+      // follows the Gaussian. The gradient runs radially outward from the
+      // photo centre, so one gradient serves every segment.
+      const halfSpan = 3 * sigma;
+      const steps = Math.max(60, Math.round((2 * halfSpan / (2 * Math.PI)) * ARC_STEPS));
+      const dTheta = (2 * halfSpan) / steps;
+
+      const grad = sctx.createRadialGradient(half, half, PHOTO_R - 2, half, half, PHOTO_R + width + 2);
+      grad.addColorStop(0,    `rgba(${col.r},${col.g},${col.b},0)`);
+      grad.addColorStop(0.15, `rgba(${col.r},${col.g},${col.b},0.9)`);
+      grad.addColorStop(0.5,  `rgba(${col.r},${col.g},${col.b},1)`);
+      grad.addColorStop(0.85, `rgba(${col.r},${col.g},${col.b},0.6)`);
+      grad.addColorStop(1,    `rgba(${col.r},${col.g},${col.b},0)`);
+
+      sctx.strokeStyle = grad;
+      sctx.lineWidth = width + 6;
+      sctx.lineCap = 'butt';
+
+      const arcR = PHOTO_R + width / 2;
+      for (let s = 0; s < steps; s++) {
+        const theta = -halfSpan + (s + 0.5) * dTheta;
+        const gaussW = Math.exp(-0.5 * (theta / sigma) * (theta / sigma));
+        if (gaussW < 0.004) continue;
+        sctx.globalAlpha = gaussW;
+        sctx.beginPath();
+        sctx.arc(half, half, arcR, theta - dTheta * 0.5, theta + dTheta * 0.5);
+        sctx.stroke();
+      }
+      return sprite;
     }
 
     // Boot with a couple staggered
@@ -2290,15 +2373,21 @@
     setTimeout(spawnWavelet, 700);
     setTimeout(spawnWavelet, 1500);
 
+    // Only spawn while the animation runs: a paused wavelet never ages, so
+    // spawning while the hero is off screen would pile them up.
     function scheduleNext() {
       const delay = 1000 + Math.random() * 2000;
-      setTimeout(() => { spawnWavelet(); scheduleNext(); }, delay);
+      setTimeout(() => { if (rafId !== null) spawnWavelet(); scheduleNext(); }, delay);
     }
     scheduleNext();
 
     let lastT = null;
 
     function draw(ts) {
+      if (lastT && ts - lastT < MIN_FRAME_MS) {
+        rafId = requestAnimationFrame(draw);
+        return;
+      }
       if (!lastT) lastT = ts;
       const dt = Math.min((ts - lastT) / 1000, 0.05);
       lastT = ts;
@@ -2313,52 +2402,14 @@
         const peakAlpha = w.amp * Math.exp(-w.decay * w.age);
         if (peakAlpha < 0.004) { wavelets.splice(i, 1); continue; }
 
-        // Draw the wavelet as a series of arc segments.
-        // For each angle θ around the circle, compute the Gaussian weight
-        // relative to the wavelet centre angle w.angle.
-        // We sample the circle at ARC_STEPS points and draw thick arc
-        // segments with alpha proportional to the Gaussian.
-
-        // Extent: draw from centre ± 3σ
-        const halfSpan = 3 * w.sigma;
-        const steps = Math.max(60, Math.round((2 * halfSpan / (2 * Math.PI)) * ARC_STEPS));
-        const dTheta = (2 * halfSpan) / steps;
-
-        // The old per-segment linear gradient always ran straight outward
-        // from the photo centre, which makes it the *same* gradient for every
-        // segment of this wavelet — so build one radial gradient here and let
-        // globalAlpha carry the per-segment Gaussian weight. Identical pixels,
-        // one gradient per wavelet instead of one per segment.
-        const grad = ctx.createRadialGradient(
-          cx, cy, PHOTO_R - 2,
-          cx, cy, PHOTO_R + w.width + 2
-        );
-        grad.addColorStop(0,    `rgba(${w.r},${w.g},${w.b},0)`);
-        grad.addColorStop(0.15, `rgba(${w.r},${w.g},${w.b},0.9)`);
-        grad.addColorStop(0.5,  `rgba(${w.r},${w.g},${w.b},1)`);
-        grad.addColorStop(0.85, `rgba(${w.r},${w.g},${w.b},0.6)`);
-        grad.addColorStop(1,    `rgba(${w.r},${w.g},${w.b},0)`);
-
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = w.width + 6;
-        ctx.lineCap = 'butt';
-
-        const arcR = PHOTO_R + w.width / 2;
-        for (let s = 0; s < steps; s++) {
-          // Angle at the midpoint of this segment
-          const theta = (w.angle - halfSpan) + (s + 0.5) * dTheta;
-          const relAngle = theta - w.angle;
-          const gaussW   = Math.exp(-0.5 * (relAngle / w.sigma) * (relAngle / w.sigma));
-          const alpha    = peakAlpha * gaussW;
-          if (alpha < 0.004) continue;
-
-          ctx.globalAlpha = alpha;
-          ctx.beginPath();
-          ctx.arc(cx, cy, arcR, theta - dTheta * 0.5, theta + dTheta * 0.5);
-          ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
+        const half = w.sprite.width / 2;
+        ctx.setTransform(1, 0, 0, 1, cx, cy);
+        ctx.rotate(w.angle);
+        ctx.globalAlpha = peakAlpha;
+        ctx.drawImage(w.sprite, -half, -half);
       }
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalAlpha = 1;
 
       rafId = requestAnimationFrame(draw);
     }
