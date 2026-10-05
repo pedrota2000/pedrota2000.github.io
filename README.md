@@ -4,21 +4,16 @@
 
 ## About
 
-I am a PhD researcher in theoretical physics at the **Institut de Ciències del Cosmos (ICCUB)**, Universitat de Barcelona. My research focuses on the intersection of fundamental physics and machine learning, with expertise in:
-
-- **AdS/CFT correspondence** and gauge-gravity duality
-- **Holography** and theoretical aspects of black holes
-- **Physics-Informed Neural Networks (PINNs)** for solving differential equations
-- **Computational physics** and spectral methods
-- **Turbulence** and fluid dynamics
-- **Theoretical cosmology** and early-universe physics
+I am a PhD researcher in theoretical physics at the **Institut de Ciències del Cosmos (ICCUB)**, Universitat de Barcelona. My research focuses on strongly coupled matter and gravity, and on machine learning for physics.
 
 ## Research Interests
 
-- Holographic duality and quantum gravity
-- Machine learning applications in theoretical physics
-- Neural networks for differential equations
-- General relativity and cosmology
+- **Holographic inverse problems**: reconstructing gravitational duals from equations of state
+- **First-order phase transitions**: bubble hydrodynamics and gravitational waves, in the early universe and neutron star mergers
+- **Turbulence** and the geometry of flows
+- **Physics-Informed Neural Networks (PINNs)** for stiff and inverse problems
+- **Learned representations** of PDE solution families
+- **AI agents** for scientific discovery
 
 ## Links
 
