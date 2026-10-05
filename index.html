@@ -408,6 +408,98 @@
       transform: none;
     }
 
+    /* ── Section backgrounds: plots from papers and projects ─────
+       One faint plot per section, on a layer below the content. The
+       image is only set once the section gets .bg-ready (added as it
+       nears the viewport), so nothing is downloaded up front.
+
+       The layer spans the whole section, and the image inside it is
+       sticky and at most one screen tall: it fills whatever part of the
+       section is on screen and stays put while you scroll through, so a
+       section of any length is fully covered without stretching the
+       plot over several screens. */
+    main section > .section-bg,
+    main section > .research-bgs {
+      position: absolute;
+      inset: 0;
+      width: auto;
+      margin: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .bg-img,
+    .bg-stick {
+      position: sticky;
+      top: 0;
+      height: min(100vh, 100%);
+    }
+
+    /* Soften the seams where one section's plot meets the next. */
+    main section > .section-bg::before,
+    main section > .section-bg::after,
+    main section > .research-bgs::before,
+    main section > .research-bgs::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 70px;
+      z-index: 1;
+    }
+    main section > .section-bg::before,
+    main section > .research-bgs::before { top: 0; background: linear-gradient(to bottom, var(--bg0), transparent); }
+    main section > .section-bg::after,
+    main section > .research-bgs::after { bottom: 0; background: linear-gradient(to top, var(--bg0), transparent); }
+
+    .bg-img,
+    .rbg {
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    section.bg-ready .bg-img { background-image: var(--bg); opacity: 0.17; }
+
+    /* Research: one layer per card plus a default; the hovered card's layer fades in */
+    .rbg { position: absolute; inset: 0; transition-duration: 0.55s; }
+    #research.bg-ready .rbg { background-image: var(--bg); }
+    .rbg.is-active { opacity: 0.24; }
+    .rbg video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .rbg video.is-playing { opacity: 1; }
+
+    main section > .bg-caption {
+      position: absolute;
+      right: max(1.2rem, calc((100% - 1120px) / 2));
+      bottom: 0.8rem;
+      width: auto;
+      max-width: 60%;
+      margin: 0;
+      font-size: 0.72rem;
+      font-style: italic;
+      color: #56657c;
+      text-align: right;
+      line-height: 1.4;
+      pointer-events: none;
+    }
+
+    @media (max-width: 700px) {
+      section.bg-ready .bg-img,
+      #research.bg-ready .rbg { background-image: var(--bg-sm, var(--bg)); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg-img, .rbg, .rbg video { transition: none; }
+    }
+
     /* ── Shared components ────────────────────────────────────── */
     .badge {
       font-size: 0.78rem;
@@ -793,7 +885,14 @@
         height: 16px;
       }
       main section {
-        padding: 2.4rem 1rem 2.2rem;
+        padding: 2.4rem 1rem 3.4rem;
+      }
+      main section > .bg-caption {
+        left: 1rem;
+        right: 1rem;
+        max-width: none;
+        font-size: 0.68rem;
+        text-align: center;
       }
       .section-title {
         font-size: 1.5rem;
@@ -871,6 +970,8 @@
 
   <!-- ── About ──────────────────────────────────────────────── -->
   <section id="bio" class="reveal is-visible">
+    <div class="section-bg" aria-hidden="true"><div class="bg-img" style="--bg:url(bg/about.webp);--bg-sm:url(bg/about-sm.webp)"></div></div>
+    <div class="bg-caption" aria-hidden="true">Background: holographic turbulence, energy density and local fluid velocity (Jecco)</div>
     <h2 class="section-title">About me</h2>
 
     <p>
@@ -921,10 +1022,30 @@
 
   <!-- ── Research ───────────────────────────────────────────── -->
   <section id="research" class="reveal">
+    <!-- Background follows the hovered card. Clips (2, 3) only load on first hover. -->
+    <div class="research-bgs" aria-hidden="true">
+      <div class="bg-stick">
+      <div class="rbg is-active" data-bg="0" data-caption="Background: vortex structures (Q criterion) in a turbulent flow"
+           style="--bg:url(bg/research-0.webp);--bg-sm:url(bg/research-0-sm.webp)"></div>
+      <div class="rbg" data-bg="1" data-caption="Background: families of bulk solutions learned by NNHolo"
+           style="--bg:url(bg/research-1.webp);--bg-sm:url(bg/research-1-sm.webp)"></div>
+      <div class="rbg" data-bg="2" data-caption="Background: a bubble expanding in a holographic first-order phase transition (Jecco)"
+           style="--bg:url(bg/research-2.webp)"><video muted loop playsinline preload="none" data-webm="bg/research-2.webm" data-mp4="bg/research-2.mp4"></video></div>
+      <div class="rbg" data-bg="3" data-caption="Background: enstrophy slices of a 3D turbulence simulation (AthenaK)"
+           style="--bg:url(bg/research-3.webp)"><video muted loop playsinline preload="none" data-webm="bg/research-3.webm" data-mp4="bg/research-3.mp4"></video></div>
+      <div class="rbg" data-bg="4" data-caption="Background: Calderón problem, true and PINN-reconstructed conductivities"
+           style="--bg:url(bg/research-4.webp);--bg-sm:url(bg/research-4-sm.webp)"></div>
+      <div class="rbg" data-bg="5" data-caption="Background: latent manifold learned for the Burgers equation"
+           style="--bg:url(bg/research-5.webp);--bg-sm:url(bg/research-5-sm.webp)"></div>
+      <div class="rbg" data-bg="6" data-caption="Background: the Planning &amp; Control sketch of Denario's agents (Denario paper, Fig. 2)"
+           style="--bg:url(bg/research-6.webp);--bg-sm:url(bg/research-6-sm.webp)"></div>
+      </div>
+    </div>
+    <div class="bg-caption" aria-hidden="true">Background: vortex structures (Q criterion) in a turbulent flow</div>
     <h2 class="section-title">Research interests</h2>
 
     <div class="research-grid">
-      <div class="research-card">
+      <div class="research-card" data-bg="1">
         <div class="icon">🔭</div>
         <h3>Holographic Inverse Problems</h3>
         <p>
@@ -935,7 +1056,7 @@
         </p>
       </div>
 
-      <div class="research-card">
+      <div class="research-card" data-bg="2">
         <div class="icon">🌌</div>
         <h3>Phase Transitions &amp; Gravitational Waves</h3>
         <p>
@@ -947,7 +1068,7 @@
         </p>
       </div>
 
-      <div class="research-card">
+      <div class="research-card" data-bg="3">
         <div class="icon">🌊</div>
         <h3>Turbulence &amp; Geometry of Flows</h3>
         <p>
@@ -958,7 +1079,7 @@
         </p>
       </div>
 
-      <div class="research-card">
+      <div class="research-card" data-bg="4">
         <div class="icon">🧠</div>
         <h3>Physics-Informed Neural Networks</h3>
         <p>
@@ -969,7 +1090,7 @@
         </p>
       </div>
 
-      <div class="research-card">
+      <div class="research-card" data-bg="5">
         <div class="icon">📐</div>
         <h3>What Networks Learn about PDEs</h3>
         <p>
@@ -980,7 +1101,7 @@
         </p>
       </div>
 
-      <div class="research-card">
+      <div class="research-card" data-bg="6">
         <div class="icon">🤖</div>
         <h3>AI Agents for Science</h3>
         <p>
@@ -994,6 +1115,8 @@
 
   <!-- ── Publications ───────────────────────────────────────── -->
   <section id="publications" class="reveal">
+    <div class="section-bg" aria-hidden="true"><div class="bg-img" style="--bg:url(bg/publications.webp);--bg-sm:url(bg/publications-sm.webp)"></div></div>
+    <div class="bg-caption" aria-hidden="true">Background: allowed and obstructed bubble expansion modes, from <em>Non-conformal obstructions to bubble expansion</em></div>
     <h2 class="section-title">Publications</h2>
 
     <div class="pub-card">
@@ -1150,6 +1273,8 @@
 
   <!-- ── Teaching ───────────────────────────────────────────── -->
   <section id="teaching" class="reveal">
+    <div class="section-bg" aria-hidden="true"><div class="bg-img" style="--bg:url(bg/teaching.webp);--bg-sm:url(bg/teaching-sm.webp)"></div></div>
+    <div class="bg-caption" aria-hidden="true">Background: a fully connected neural network, from the lecture notes</div>
     <h2 class="section-title">Teaching</h2>
 
     <div class="card" style="border-left-color: rgba(52,211,153,0.5);">
@@ -1193,6 +1318,8 @@
 
   <!-- ── CV ─────────────────────────────────────────────────── -->
   <section id="cv" class="reveal">
+    <div class="section-bg" aria-hidden="true"><div class="bg-img" style="--bg:url(bg/cv.webp);--bg-sm:url(bg/cv-sm.webp)"></div></div>
+    <div class="bg-caption" aria-hidden="true">Background: advection in a multi-mode flow (GeoFlowTracerLab)</div>
     <h2 class="section-title">Curriculum Vitae</h2>
 
     <div class="cv-download">
@@ -1568,6 +1695,8 @@
 
   <!-- ── Contact ────────────────────────────────────────────── -->
   <section id="contact" class="reveal">
+    <div class="section-bg" aria-hidden="true"><div class="bg-img" style="--bg:url(bg/contact.webp);--bg-sm:url(bg/contact-sm.webp)"></div></div>
+    <div class="bg-caption" aria-hidden="true">Background: vortex regions (λ<sub>2</sub> criterion) in a turbulent flow</div>
     <h2 class="section-title">Contact</h2>
 
     <div class="card contact-email-card">
@@ -2562,6 +2691,118 @@
 
     document.addEventListener('visibilitychange', sync);
     sync();
+  })();
+
+
+  /* ══════════════════════════════════════════════════════════
+     SECTION BACKGROUNDS
+     Each section's plot is only set (and so only downloaded) once the
+     section comes within a few hundred pixels of the viewport.
+  ══════════════════════════════════════════════════════════ */
+  (function () {
+    const withBg = document.querySelectorAll('main section');
+    if (!('IntersectionObserver' in window)) {
+      withBg.forEach((s) => s.classList.add('bg-ready'));
+      return;
+    }
+    const bgObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('bg-ready');
+          bgObserver.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '300px 0px' });
+    withBg.forEach((s) => bgObserver.observe(s));
+  })();
+
+
+  /* ══════════════════════════════════════════════════════════
+     RESEARCH: BACKGROUND FOLLOWS THE HOVERED CARD
+     Mouse: hovering a card fades in its layer; leaving the grid goes back
+     to the default. Touch: tapping a card toggles its layer. A clip gets
+     its src on first use and only plays while its layer is showing and
+     the section is on screen.
+  ══════════════════════════════════════════════════════════ */
+  (function () {
+    const section = document.getElementById('research');
+    const grid = section && section.querySelector('.research-grid');
+    if (!grid) return;
+
+    const layers = {};
+    section.querySelectorAll('.rbg').forEach((l) => { layers[l.dataset.bg] = l; });
+    const caption = section.querySelector('.bg-caption');
+    let active = layers['0'];
+    let onScreen = false;
+    let lastPointer = 'mouse';
+
+    // VP9 WebM where supported (it is also the only one some Chromium builds
+    // without proprietary codecs can decode), H.264 MP4 otherwise.
+    function loadClip(video) {
+      const webmOk = video.canPlayType('video/webm; codecs="vp9"') !== '';
+      video.addEventListener('playing', () => video.classList.add('is-playing'));
+      video.addEventListener('error', () => {
+        if (video.dataset.mp4 && !video.currentSrc.endsWith('.mp4')) {
+          video.src = video.dataset.mp4;
+          if (video.closest('.rbg') === active) playActive();
+        }
+      });
+      video.src = webmOk ? video.dataset.webm : video.dataset.mp4;
+    }
+
+    function playActive() {
+      const video = active.querySelector('video');
+      if (!video || prefersReducedMotion || !onScreen || document.hidden) return;
+      if (!video.getAttribute('src')) loadClip(video);
+      video.muted = true;
+      const started = video.play();
+      if (started) started.catch(() => {});
+    }
+
+    function pauseActive() {
+      const video = active.querySelector('video');
+      if (video) video.pause();
+    }
+
+    function activate(key) {
+      const next = layers[key] || layers['0'];
+      if (next === active) return;
+      pauseActive();
+      active.classList.remove('is-active');
+      next.classList.add('is-active');
+      active = next;
+      if (caption) caption.textContent = next.dataset.caption;
+      playActive();
+    }
+
+    grid.addEventListener('pointerdown', (e) => { lastPointer = e.pointerType; });
+
+    grid.querySelectorAll('.research-card[data-bg]').forEach((card) => {
+      card.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'touch') activate(card.dataset.bg);
+      });
+      card.addEventListener('click', () => {
+        if (lastPointer !== 'touch') return;
+        activate(active === layers[card.dataset.bg] ? '0' : card.dataset.bg);
+      });
+    });
+
+    grid.addEventListener('pointerleave', (e) => {
+      if (e.pointerType !== 'touch') activate('0');
+    });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        entries.forEach((entry) => { onScreen = entry.isIntersecting; });
+        if (onScreen) playActive(); else pauseActive();
+      }, { threshold: 0 }).observe(section);
+    } else {
+      onScreen = true;
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) pauseActive(); else playActive();
+    });
   })();
 </script>
 
