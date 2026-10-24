@@ -460,12 +460,12 @@
       transition: opacity 1s ease;
     }
 
-    section.bg-ready .bg-img { background-image: var(--bg); opacity: 0.17; }
+    section.bg-ready .bg-img { background-image: var(--bg); opacity: 1; }
 
     /* Research: one layer per card plus a default; the hovered card's layer fades in */
     .rbg { position: absolute; inset: 0; transition-duration: 0.55s; }
     #research.bg-ready .rbg { background-image: var(--bg); }
-    .rbg.is-active { opacity: 0.24; }
+    .rbg.is-active { opacity: 1; }
     .rbg video {
       display: block;
       width: 100%;
@@ -490,6 +490,7 @@
       line-height: 1.4;
       pointer-events: none;
     }
+    main section > .bg-caption:empty { display: none; }
 
     @media (max-width: 700px) {
       section.bg-ready .bg-img,
@@ -580,29 +581,185 @@
     .supervisor-card .s-name { font-size: 0.93rem; font-weight: 600; color: var(--text); }
     .supervisor-card .s-role { font-size: 0.82rem; color: var(--muted); margin-top: 0.1rem; }
 
-    /* ── Research ─────────────────────────────────────────────── */
-    .research-grid {
+    /* ── Research: the Venn diagram from my Benasque 2026 slide ─────
+       The slide's own artwork and words. Clicking a region pops up its
+       description beside the diagram (a sheet from the bottom when there is no
+       room). Without the script, the descriptions sit around the diagram. */
+    .rmap {
+      position: relative;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.8rem;
+      grid-template-columns: minmax(0, 1fr) minmax(400px, 560px) minmax(0, 1fr);
+      grid-template-areas:
+        "d1 dia d4"
+        "d2 dia d5"
+        "d3 dia d6"
+        ".  d7  .";
+      column-gap: 2rem;
+      row-gap: 1rem;
+      align-items: center;
     }
+    .rmap-diagram { grid-area: dia; position: relative; z-index: 1; }
+    .rd-g   { grid-area: d1; --c: #a78bfa; }
+    .rd-gh  { grid-area: d2; --c: #6ab0dc; }
+    .rd-h   { grid-area: d3; --c: #2dd4bf; }
+    .rd-gm  { grid-area: d4; --c: #cb999a; }
+    .rd-m   { grid-area: d5; --c: #f0c43a; }
+    .rd-hm  { grid-area: d6; --c: #8ebe7c; }
+    .rd-ghm { grid-area: d7; --c: #c4b5fd; }
 
-    .research-card {
-      background: linear-gradient(130deg, rgba(15, 23, 42, 0.68), rgba(15, 23, 42, 0.38));
-      border: 1px solid rgba(56, 189, 248, 0.14);
-      border-left: 2px solid rgba(56, 189, 248, 0.42);
+    .rdesc {
+      position: relative;
+      z-index: 3;
+      padding: 0.75rem 0.95rem 0.8rem;
+      background: rgba(9, 15, 31, 0.84);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-left: 2px solid var(--c);
       border-radius: 6px;
-      padding: 1.3rem 1.5rem;
-      box-shadow: none;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      outline: none;
+    }
+    .rdesc h3 { margin-bottom: 0.3rem; font-size: 0.98rem; font-weight: 600; color: var(--text); }
+    .rdesc p { font-size: 0.87rem; line-height: 1.55; color: var(--muted); }
+    .rlinks { display: flex; flex-wrap: wrap; gap: 0.3rem 0.85rem; margin-top: 0.45rem; font-size: 0.8rem; }
+
+    .rmap-lines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 2;
+      display: none;
+    }
+    .rline { fill: none; stroke: var(--c); stroke-width: 1.8; stroke-opacity: 0.95; }
+
+    /* the diagram */
+    .venn { display: block; width: 100%; height: auto; overflow: visible; touch-action: manipulation; }
+    .v-geo circle { fill: none; }
+    .venn text {
+      font-family: Calibri, Carlito, var(--font-body);
+      fill: #f4f6ff;
+      paint-order: stroke;
+      stroke: rgba(2, 6, 23, 0.85);
+      stroke-width: 9px;
+      stroke-linejoin: round;
+      user-select: none;
+    }
+    .venn .v-b { font-weight: 700; }
+    .venn .v-lbl { font-weight: 400; }
+    .v-words { pointer-events: none; }
+    .v-narrow { display: none; }
+    .vr { fill: #e2e8f0; opacity: 0; transition: opacity 0.25s ease; pointer-events: none; }
+    .vr.is-hover { opacity: 0.07; }
+    .vr.is-on { opacity: 0.14; }
+    .v-anchor { outline: none; }
+    .v-anchor:focus-visible text { stroke: var(--accent); }
+    .v-anchor:focus-visible .v-photo { filter: drop-shadow(0 0 10px var(--accent)); }
+
+    /* tablets without script: diagram on top, descriptions in two columns */
+    @media (max-width: 1080px) {
+      .rmap {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "dia dia" "d1 d4" "d2 d5" "d3 d6" "d7 d7";
+        column-gap: 1rem;
+        align-items: stretch;
+      }
+      .rmap-diagram { justify-self: center; width: min(640px, 100%); margin-bottom: 0.4rem; }
     }
 
-    .research-card:hover { transform: translateY(-3px); border-color: rgba(56,189,248,0.35); }
+    /* phones: the artwork fills the width; small topic labels are dropped (they are
+       in the descriptions) and the long titles wrap inside their circles */
+    @media (max-width: 600px) {
+      .rmap { grid-template-columns: 1fr; grid-template-areas: "dia" "d1" "d2" "d3" "d4" "d5" "d6" "d7"; }
+      .v-lbl, .v-wide { display: none; }
+      .v-narrow { display: inline; }
+    }
 
-    .research-card .icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
-    .research-card h3    { font-size: 1.04rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text); }
-    .research-card p     { font-size: 0.93rem; color: var(--muted); line-height: 1.65; }
+    /* ── Pop-up mode (switched on by the script) ── */
+    /* Sections are separate stacking contexts (for their backgrounds); lift this one so the
+       fixed sheet paints over the sections after it. Still below the nav bar (z-index 200). */
+    main #research { z-index: 1; }
+    .rclose { display: none; }
+    .rmap-hint { margin-top: 0.4rem; text-align: center; font-size: 0.84rem; color: var(--muted); }
+    .rmap:not(.is-pop) .rmap-hint { display: none; }
+    .rmap-hint .on-touch { display: none; }
+    @media (hover: none) {
+      .rmap-hint .on-hover { display: none; }
+      .rmap-hint .on-touch { display: inline; }
+    }
+
+    /* the pop-ups sit beside the whole diagram (overhanging titles included), so on wide
+       screens this row may use a little more than the 1120 px text column */
+    .rmap.is-pop {
+      --map-w: min(1280px, calc(100vw - 48px));
+      display: block;
+      width: var(--map-w);
+      margin-left: calc((100% - var(--map-w)) / 2);
+      margin-right: 0;
+    }
+    .rmap.is-pop .rmap-diagram { width: min(680px, 100%); margin: 0 auto; }
+    .rmap.is-pop .venn { cursor: pointer; }
+    .rmap.is-pop .rmap-lines { display: block; }
+    .rmap.is-pop .rdesc {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 256px;            /* POP_W in the script */
+      display: none;
+      z-index: 5;
+      padding: 0.85rem 2.3rem 0.9rem 1rem;
+      background: #0b1224;
+      box-shadow: 0 0 0 1px var(--c), 0 16px 40px rgba(2, 6, 23, 0.65);
+    }
+    .rmap.is-pop .rdesc.is-open { display: block; animation: rpop 0.18s ease-out; }
+    @keyframes rpop {
+      from { opacity: 0; transform: translateY(6px) scale(0.98); }
+      to   { opacity: 1; transform: none; }
+    }
+    .rmap.is-pop .rclose {
+      display: grid;
+      place-items: center;
+      position: absolute;
+      top: 0.4rem;
+      right: 0.45rem;
+      width: 1.9rem;
+      height: 1.9rem;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 1.3rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .rmap.is-pop .rclose:hover,
+    .rmap.is-pop .rclose:focus-visible { color: var(--text); background: rgba(148, 163, 184, 0.14); outline: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .rmap.is-pop .rdesc.is-open { animation: none; }
+    }
+
+    /* no room beside the diagram (tablets, phones): a sheet slides up from the bottom */
+    .rmap.is-pop.is-sheet .rmap-lines { display: none; }
+    .rmap.is-pop.is-sheet .rdesc {
+      position: fixed;
+      top: auto;
+      left: 0.75rem;
+      right: 0.75rem;
+      bottom: 0.75rem;
+      width: auto;
+      max-width: 560px;
+      max-height: 62vh;
+      margin: 0 auto;
+      overflow-y: auto;
+      z-index: 300;
+    }
+    .rmap.is-pop.is-sheet .rdesc.is-open { animation-name: rsheet; animation-duration: 0.22s; }
+    @keyframes rsheet {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: none; }
+    }
 
     /* ── Publications ─────────────────────────────────────────── */
     .pub-card {
@@ -1022,94 +1179,150 @@
 
   <!-- ── Research ───────────────────────────────────────────── -->
   <section id="research" class="reveal">
-    <!-- Background follows the hovered card. Clips (2, 3) only load on first hover. -->
+    <!-- No background until a region is opened; then its plot fades in.
+         The two clips only load on first use. -->
     <div class="research-bgs" aria-hidden="true">
       <div class="bg-stick">
-      <div class="rbg is-active" data-bg="0" data-caption="Background: vortex structures (Q criterion) in a turbulent flow"
-           style="--bg:url(bg/research-0.webp);--bg-sm:url(bg/research-0-sm.webp)"></div>
-      <div class="rbg" data-bg="1" data-caption="Background: families of bulk solutions learned by NNHolo"
-           style="--bg:url(bg/research-1.webp);--bg-sm:url(bg/research-1-sm.webp)"></div>
-      <div class="rbg" data-bg="2" data-caption="Background: a bubble expanding in a holographic first-order phase transition (Jecco)"
+      <div class="rbg is-active" data-bg="0" data-caption=""></div>
+      <div class="rbg" data-bg="g" data-caption="Background: a bubble expanding in a holographic first-order phase transition (Jecco)"
            style="--bg:url(bg/research-2.webp)"><video muted loop playsinline preload="none" data-webm="bg/research-2.webm" data-mp4="bg/research-2.mp4"></video></div>
-      <div class="rbg" data-bg="3" data-caption="Background: enstrophy slices of a 3D turbulence simulation (AthenaK)"
+      <div class="rbg" data-bg="gh" data-caption="Background: holographic turbulence, energy density and local fluid velocity (Jecco)"
+           style="--bg:url(bg/about.webp);--bg-sm:url(bg/about-sm.webp)"></div>
+      <div class="rbg" data-bg="h" data-caption="Background: enstrophy slices of a 3D turbulence simulation (AthenaK)"
            style="--bg:url(bg/research-3.webp)"><video muted loop playsinline preload="none" data-webm="bg/research-3.webm" data-mp4="bg/research-3.mp4"></video></div>
-      <div class="rbg" data-bg="4" data-caption="Background: Calderón problem, true and PINN-reconstructed conductivities"
-           style="--bg:url(bg/research-4.webp);--bg-sm:url(bg/research-4-sm.webp)"></div>
-      <div class="rbg" data-bg="5" data-caption="Background: latent manifold learned for the Burgers equation"
-           style="--bg:url(bg/research-5.webp);--bg-sm:url(bg/research-5-sm.webp)"></div>
-      <div class="rbg" data-bg="6" data-caption="Background: the Planning &amp; Control sketch of Denario's agents (Denario paper, Fig. 2)"
+      <div class="rbg" data-bg="gm" data-caption="Background: families of bulk solutions learned by NNHolo"
+           style="--bg:url(bg/research-1.webp);--bg-sm:url(bg/research-1-sm.webp)"></div>
+      <div class="rbg" data-bg="m" data-caption="Background: the Planning &amp; Control sketch of Denario's agents (Denario paper, Fig. 2)"
            style="--bg:url(bg/research-6.webp);--bg-sm:url(bg/research-6-sm.webp)"></div>
+      <div class="rbg" data-bg="hm" data-caption="Background: latent manifold learned for the Burgers equation"
+           style="--bg:url(bg/research-5.webp);--bg-sm:url(bg/research-5-sm.webp)"></div>
       </div>
     </div>
-    <div class="bg-caption" aria-hidden="true">Background: vortex structures (Q criterion) in a turbulent flow</div>
+    <div class="bg-caption" aria-hidden="true"></div>
     <h2 class="section-title">Research interests</h2>
 
-    <div class="research-grid">
-      <div class="research-card" data-bg="1">
-        <div class="icon">🔭</div>
-        <h3>Holographic Inverse Problems</h3>
-        <p>
-          Reconstructing the gravitational dual of a strongly coupled gauge theory directly from
-          its equation of state, by solving the bulk Einstein–scalar equations as an inverse
-          problem with PINNs. The method now reaches theories with large hierarchies of scales,
-          false vacua and skipping renormalization-group flows.
-        </p>
+    <!-- The diagram from my Benasque 2026 lightning-talk slide (its artwork, words and photo).
+         Clicking a region pops up its description. Without JavaScript the descriptions sit around it. -->
+    <div class="rmap">
+      <svg class="rmap-lines" aria-hidden="true"></svg>
+      <div class="rmap-diagram">
+<svg class="venn" viewBox="-240 0 2100 1564" data-vb-wide="-240 0 2100 1564" data-vb-narrow="-10 0 1658 1564" role="group" aria-labelledby="venn-title">
+<title id="venn-title">Research areas: gravity and holography, hydrodynamics, and machine learning. Select an area to read about it.</title>
+<defs>
+<clipPath id="vc-g"><circle cx="819" cy="543" r="543" /></clipPath>
+<mask id="vm-g" maskUnits="userSpaceOnUse" x="0" y="0" width="1638" height="1564"><rect width="1638" height="1564" fill="#fff"/><circle cx="543" cy="1020.9" r="543" fill="#000"/><circle cx="1095" cy="1020.9" r="543" fill="#000"/></mask>
+<mask id="vx-g" maskUnits="userSpaceOnUse" x="0" y="0" width="1638" height="1564"><rect width="1638" height="1564" fill="#fff"/><circle cx="819" cy="543" r="543" fill="#000"/></mask>
+<clipPath id="vc-h"><circle cx="543" cy="1020.9" r="543" /></clipPath>
+<mask id="vm-h" maskUnits="userSpaceOnUse" x="0" y="0" width="1638" height="1564"><rect width="1638" height="1564" fill="#fff"/><circle cx="819" cy="543" r="543" fill="#000"/><circle cx="1095" cy="1020.9" r="543" fill="#000"/></mask>
+<mask id="vx-h" maskUnits="userSpaceOnUse" x="0" y="0" width="1638" height="1564"><rect width="1638" height="1564" fill="#fff"/><circle cx="543" cy="1020.9" r="543" fill="#000"/></mask>
+<clipPath id="vc-m"><circle cx="1095" cy="1020.9" r="543" /></clipPath>
+<mask id="vm-m" maskUnits="userSpaceOnUse" x="0" y="0" width="1638" height="1564"><rect width="1638" height="1564" fill="#fff"/><circle cx="819" cy="543" r="543" fill="#000"/><circle cx="543" cy="1020.9" r="543" fill="#000"/></mask>
+<mask id="vx-m" maskUnits="userSpaceOnUse" x="0" y="0" width="1638" height="1564"><rect width="1638" height="1564" fill="#fff"/><circle cx="1095" cy="1020.9" r="543" fill="#000"/></mask>
+</defs>
+<image class="v-art" href="bg/venn-art.webp" x="0" y="0" width="1638" height="1564"/>
+<g class="v-geo" aria-hidden="true"><circle cx="819" cy="543" r="543" data-k="g"/><circle cx="543" cy="1020.9" r="543" data-k="h"/><circle cx="1095" cy="1020.9" r="543" data-k="m"/></g>
+<g class="v-regions" aria-hidden="true">
+<g class="vr" data-r="g" mask="url(#vm-g)"><circle cx="819" cy="543" r="543" /></g>
+<g class="vr" data-r="h" mask="url(#vm-h)"><circle cx="543" cy="1020.9" r="543" /></g>
+<g class="vr" data-r="m" mask="url(#vm-m)"><circle cx="1095" cy="1020.9" r="543" /></g>
+<g class="vr" data-r="gh" mask="url(#vx-m)"><g clip-path="url(#vc-h)"><circle cx="819" cy="543" r="543" /></g></g>
+<g class="vr" data-r="gm" mask="url(#vx-h)"><g clip-path="url(#vc-m)"><circle cx="819" cy="543" r="543" /></g></g>
+<g class="vr" data-r="hm" mask="url(#vx-g)"><g clip-path="url(#vc-m)"><circle cx="543" cy="1020.9" r="543" /></g></g>
+<g class="vr" data-r="ghm"><g clip-path="url(#vc-h)"><g clip-path="url(#vc-m)"><circle cx="819" cy="543" r="543" /></g></g></g>
+</g>
+<g class="v-words" aria-hidden="true"><text class="v-lbl" font-size="41.7" text-anchor="middle" dominant-baseline="central"><tspan x="613.7" y="309.1">QNMs</tspan></text><text class="v-lbl" font-size="41.7" text-anchor="middle" dominant-baseline="central"><tspan x="925.7" y="312.2">NUMERICAL</tspan><tspan x="925.7" y="362.2">RELATIVITY</tspan></text><text class="v-lbl" font-size="41.7" text-anchor="middle" dominant-baseline="central"><tspan x="194.9" y="882.3">TURBULENCE</tspan></text><text class="v-lbl" font-size="41.7" text-anchor="middle" dominant-baseline="central"><tspan x="354.2" y="1188.9">BUBBLE DYNAMICS</tspan></text><text class="v-lbl" font-size="41.7" text-anchor="middle" dominant-baseline="central"><tspan x="400.7" y="1348.8">PHASE TRANSITIONS</tspan></text><text class="v-lbl" font-size="41.7" text-anchor="middle" dominant-baseline="central"><tspan x="1408.2" y="925.3">INVERSE PROBLEMS</tspan></text><text class="v-lbl" font-size="41.7" text-anchor="middle" dominant-baseline="central"><tspan x="1212.8" y="1301.3">PHYSICS INFORMED</tspan><tspan x="1212.8" y="1351.3">NEURAL NETWORKS</tspan></text><text class="v-lbl" font-size="41.7" text-anchor="middle" dominant-baseline="central"><tspan x="1212.0" y="1407.0">AI AGENTS</tspan><tspan x="1212.0" y="1457.0">(DENARIO)</tspan></text></g>
+<g class="v-buttons"><g class="v-anchor" data-anchor="g" tabindex="0" role="button" aria-controls="rd-g" aria-expanded="false" aria-label="Gravity &amp; holography"><text class="v-title v-b" font-size="83.4" text-anchor="middle" dominant-baseline="central"><tspan x="817.7" y="78.6">GRAVITY /</tspan><tspan x="817.7" y="178.7">HOLOGRAPHY</tspan></text></g><g class="v-anchor" data-anchor="gh" tabindex="0" role="button" aria-controls="rd-gh" aria-expanded="false" aria-label="Fluids from gravity"><text class="v-ovl v-b" font-size="48.6" text-anchor="middle" dominant-baseline="central" transform="rotate(13.35 493.1 658.2)"><tspan x="493.1" y="599.8">UNDERSTAND</tspan><tspan x="493.1" y="658.2">FLUIDS FROM</tspan><tspan x="493.1" y="716.6">GRAVITY</tspan></text></g><g class="v-anchor" data-anchor="h" tabindex="0" role="button" aria-controls="rd-h" aria-expanded="false" aria-label="Hydrodynamics"><text class="v-title v-wide v-b" font-size="83.4" text-anchor="middle" dominant-baseline="central"><tspan x="131.6" y="1060.7">HYDRODYNAMICS</tspan></text><text class="v-title v-narrow v-b" font-size="83.4" text-anchor="middle" dominant-baseline="central"><tspan x="300.0" y="950.0">HYDRO-</tspan><tspan x="300.0" y="1050.0">DYNAMICS</tspan></text></g><g class="v-anchor" data-anchor="gm" tabindex="0" role="button" aria-controls="rd-gm" aria-expanded="false" aria-label="Bulk from thermodynamics"><text class="v-ovl v-b" font-size="48.6" text-anchor="middle" dominant-baseline="central" transform="rotate(29.43 1147.6 630.4)"><tspan x="1147.6" y="542.8">BULK</tspan><tspan x="1147.6" y="601.2">RECONSTRUCTION</tspan><tspan x="1147.6" y="659.5">FROM</tspan><tspan x="1147.6" y="717.9">THERMODYNAMICS</tspan></text></g><g class="v-anchor" data-anchor="m" tabindex="0" role="button" aria-controls="rd-m" aria-expanded="false" aria-label="Machine learning"><text class="v-title v-wide v-b" font-size="83.4" text-anchor="middle" dominant-baseline="central"><tspan x="1430.1" y="1104.0">MACHINE LEARNING</tspan></text><text class="v-title v-narrow v-b" font-size="83.4" text-anchor="middle" dominant-baseline="central"><tspan x="1360.0" y="980.0">MACHINE</tspan><tspan x="1360.0" y="1080.0">LEARNING</tspan></text></g><g class="v-anchor" data-anchor="hm" tabindex="0" role="button" aria-controls="rd-hm" aria-expanded="false" aria-label="Transfer learning &amp; stiff PDEs"><text class="v-ovl v-b" font-size="48.6" text-anchor="middle" dominant-baseline="central"><tspan x="814.0" y="1200.8">TRANSFER LEARNING</tspan><tspan x="814.0" y="1259.2">STIFF PDEs</tspan></text></g><g class="v-anchor" data-anchor="ghm" tabindex="0" role="button" aria-controls="rd-ghm" aria-expanded="false" aria-label="Strongly coupled matter"><image class="v-photo" href="bg/venn-photo.webp" x="642.0" y="654.9" width="344.0" height="344.0"/></g></g>
+</svg>
+        <p class="rmap-hint"><span class="on-hover">Click a region to read about it.</span><span class="on-touch">Tap a region to read about it.</span></p>
       </div>
 
-      <div class="research-card" data-bg="2">
-        <div class="icon">🌌</div>
-        <h3>Phase Transitions &amp; Gravitational Waves</h3>
+      <article class="rdesc rd-g" id="rd-g" data-r="g">
+        <button class="rclose" type="button" aria-label="Close">&times;</button>
+        <h3>Gravity &amp; holography</h3>
         <p>
-          Bubble expansion in first-order phase transitions beyond the conformal approximation.
-          Non-conformal equations of state obstruct some expansion modes, open new ones
-          (“shocked detonations”) and, for QCD-like theories, rule out detonations entirely.
-          This changes the energy available for gravitational waves from the early universe and
-          neutron star mergers.
+          Strongly coupled quantum matter, mapped onto gravity in one more dimension. Numerical
+          relativity in asymptotically AdS spacetimes follows it in real time, and quasinormal modes of
+          black branes probe its stability.
         </p>
-      </div>
+      </article>
 
-      <div class="research-card" data-bg="3">
-        <div class="icon">🌊</div>
-        <h3>Turbulence &amp; Geometry of Flows</h3>
+      <article class="rdesc rd-gh" id="rd-gh" data-r="gh">
+        <button class="rclose" type="button" aria-label="Close">&times;</button>
+        <h3>Fluids from gravity</h3>
         <p>
-          Turbulence and hydrodynamic instabilities, from holography, where the flow is encoded
-          in the geometry of the bulk, to vortex dynamics. Member of the Simons Collaboration for
-          the Geometry of Flows, and contributor of turbulence forcing to the
-          <em>AthenaK</em> code.
+          A strongly coupled fluid becomes a black-brane geometry: bubble walls and turbulent eddies
+          turn into dynamics of spacetime, giving access to quantities that are hard to compute from
+          the fluid alone.
         </p>
-      </div>
+      </article>
 
-      <div class="research-card" data-bg="4">
-        <div class="icon">🧠</div>
-        <h3>Physics-Informed Neural Networks</h3>
+      <article class="rdesc rd-h" id="rd-h" data-r="h">
+        <button class="rclose" type="button" aria-label="Close">&times;</button>
+        <h3>Hydrodynamics</h3>
         <p>
-          Multi-head PINNs in which a shared body learns a whole family of solutions, with a
-          unimodular regularization of the latent space that makes transfer learning into stiff
-          regimes efficient. Applied to holography and to other inverse problems, such as the
-          Calderón problem of electrical impedance tomography.
+          Bubbles in first-order phase transitions and the gravitational waves their flows source.
+          Non-conformal equations of state obstruct some expansion modes and, for QCD-like theories,
+          rule out detonations. Also turbulence, in the Simons Collaboration for the Geometry of Flows.
         </p>
-      </div>
+        <div class="rlinks">
+          <a href="https://arxiv.org/abs/2607.27874" target="_blank" rel="noopener">Preprint 2026</a>
+          <a href="https://github.com/pedrota2000/SNOBEX" target="_blank" rel="noopener">SNOBEX code</a>
+        </div>
+      </article>
 
-      <div class="research-card" data-bg="5">
-        <div class="icon">📐</div>
-        <h3>What Networks Learn about PDEs</h3>
+      <article class="rdesc rd-gm" id="rd-gm" data-r="gm">
+        <button class="rclose" type="button" aria-label="Close">&times;</button>
+        <h3>Bulk from thermodynamics</h3>
         <p>
-          Embedding families of PDE solutions (Burgers, heat, wave) in a learned latent manifold.
-          A handful of principal components carry almost all of the variance, and how they spread
-          over Fourier shells is reproducible across training runs. It is a property of the
-          solution space, not of a particular training.
+          The gravitational dual of a gauge theory, reconstructed from its equation of state alone by
+          solving the bulk equations as an inverse problem with PINNs, now including large
+          hierarchies, false vacua and skipping RG flows.
         </p>
-      </div>
+        <div class="rlinks">
+          <a href="https://doi.org/10.1007/JHEP07(2024)087" target="_blank" rel="noopener">JHEP 2024</a>
+          <a href="https://arxiv.org/abs/2606.30117" target="_blank" rel="noopener">JHEP 2026 (accepted)</a>
+          <a href="https://github.com/pedrota2000/NNHolo" target="_blank" rel="noopener">NNHolo code</a>
+        </div>
+      </article>
 
-      <div class="research-card" data-bg="6">
-        <div class="icon">🤖</div>
-        <h3>AI Agents for Science</h3>
+      <article class="rdesc rd-m" id="rd-m" data-r="m">
+        <button class="rclose" type="button" aria-label="Close">&times;</button>
+        <h3>Machine learning</h3>
         <p>
-          Contributing to <em>Denario</em>, a modular multi-agent system that generates research
-          ideas, reviews the literature, writes and runs code, and drafts papers across scientific
-          disciplines.
+          Physics-informed neural networks for stiff and inverse problems, such as the Calderón problem
+          of impedance tomography, and <em>Denario</em>, a multi-agent AI system that proposes ideas,
+          writes code and drafts papers.
         </p>
-      </div>
+        <div class="rlinks">
+          <a href="https://arxiv.org/abs/2606.28158" target="_blank" rel="noopener">Calderón 2026</a>
+          <a href="https://doi.org/10.1103/kk55-gc95" target="_blank" rel="noopener">Denario, PRX Intell. 2026</a>
+        </div>
+      </article>
+
+      <article class="rdesc rd-hm" id="rd-hm" data-r="hm">
+        <button class="rclose" type="button" aria-label="Close">&times;</button>
+        <h3>Transfer learning &amp; stiff PDEs</h3>
+        <p>
+          Multi-head networks learn whole families of solutions; regularizing their latent space lets
+          them transfer-learn into stiff regimes. For the Burgers, heat and wave equations that space
+          reduces to a few components that are reproducible across training runs.
+        </p>
+        <div class="rlinks">
+          <a href="https://doi.org/10.1038/s42005-025-02248-1" target="_blank" rel="noopener">Commun. Phys. 2025</a>
+          <a href="https://arxiv.org/abs/2603.07812" target="_blank" rel="noopener">ICLR 2026 workshop</a>
+          <a href="https://arxiv.org/abs/2607.06348" target="_blank" rel="noopener">Preprint 2026</a>
+        </div>
+      </article>
+
+      <article class="rdesc rd-ghm" id="rd-ghm" data-r="ghm">
+        <button class="rclose" type="button" aria-label="Close">&times;</button>
+        <h3>Strongly coupled matter</h3>
+        <p>
+          The common thread: matter that is strongly coupled and far from equilibrium, from the early
+          universe to neutron star mergers. Holography turns it into gravity, hydrodynamics describes
+          how it flows, and machine learning solves the hard problems in between.
+        </p>
+      </article>
     </div>
   </section>
 
@@ -2718,25 +2931,48 @@
 
 
   /* ══════════════════════════════════════════════════════════
-     RESEARCH: BACKGROUND FOLLOWS THE HOVERED CARD
-     Mouse: hovering a card fades in its layer; leaving the grid goes back
-     to the default. Touch: tapping a card toggles its layer. A clip gets
-     its src on first use and only plays while its layer is showing and
-     the section is on screen.
+     RESEARCH: VENN DIAGRAM WITH POP-UP DESCRIPTIONS
+     Regions: g = gravity, h = hydrodynamics, m = machine learning, and
+     their overlaps. Clicking anywhere in a region (or its words) pops up
+     that region's description beside the diagram, joined to its words by a
+     line, and fades in its background plot. With no room beside the
+     diagram it becomes a sheet at the bottom of the screen. Clicking it
+     again, clicking outside, the close button or Escape closes it.
+     Hovering only gives a light highlight. A clip gets its src on first
+     use and only plays while showing and on screen.
   ══════════════════════════════════════════════════════════ */
   (function () {
     const section = document.getElementById('research');
-    const grid = section && section.querySelector('.research-grid');
-    if (!grid) return;
+    const map = section && section.querySelector('.rmap');
+    if (!map) return;
+    map.classList.add('is-pop');
 
-    const layers = {};
-    section.querySelectorAll('.rbg').forEach((l) => { layers[l.dataset.bg] = l; });
+    const venn = map.querySelector('.venn');
+    const linesSvg = map.querySelector('.rmap-lines');
     const caption = section.querySelector('.bg-caption');
-    let active = layers['0'];
+    const byAttr = (sel, attr) => Object.fromEntries([...map.querySelectorAll(sel)].map((el) => [el.getAttribute(attr), el]));
+    const descs = byAttr('.rdesc', 'data-r');
+    const anchors = byAttr('.v-anchor', 'data-anchor');
+    const regions = byAttr('.vr', 'data-r');
+    const layers = Object.fromEntries([...section.querySelectorAll('.rbg')].map((l) => [l.dataset.bg, l]));
+    const circles = [...venn.querySelectorAll('.v-geo circle')].map((c) => ({
+      key: c.dataset.k, x: +c.getAttribute('cx'), y: +c.getAttribute('cy'), r: +c.getAttribute('r'),
+    }));
+    const narrow = window.matchMedia('(max-width: 600px)');
+    let open = null;              // region whose description is showing
+    let hover = null;             // region under the mouse
+    let active = layers['0'];     // background layer showing
     let onScreen = false;
-    let lastPointer = 'mouse';
 
-    // VP9 WebM where supported (it is also the only one some Chromium builds
+    Object.values(descs).forEach((d) => {
+      d.setAttribute('role', 'dialog');
+      d.setAttribute('aria-labelledby', d.id + '-t');
+      d.querySelector('h3').id = d.id + '-t';
+      d.tabIndex = -1;
+    });
+
+    // ── background layers and clips ──
+    // VP9 WebM where supported (also the only format some Chromium builds
     // without proprietary codecs can decode), H.264 MP4 otherwise.
     function loadClip(video) {
       const webmOk = video.canPlayType('video/webm; codecs="vp9"') !== '';
@@ -2764,7 +3000,7 @@
       if (video) video.pause();
     }
 
-    function activate(key) {
+    function showLayer(key) {
       const next = layers[key] || layers['0'];
       if (next === active) return;
       pauseActive();
@@ -2775,26 +3011,128 @@
       playActive();
     }
 
-    grid.addEventListener('pointerdown', (e) => { lastPointer = e.pointerType; });
+    // ── geometry ──
+    function regionAt(clientX, clientY) {
+      const pt = venn.createSVGPoint();
+      pt.x = clientX; pt.y = clientY;
+      const p = pt.matrixTransform(venn.getScreenCTM().inverse());
+      const key = circles
+        .filter((c) => (p.x - c.x) ** 2 + (p.y - c.y) ** 2 <= c.r * c.r)
+        .map((c) => c.key).sort((a, b) => 'ghm'.indexOf(a) - 'ghm'.indexOf(b)).join('');
+      return key || null;
+    }
 
-    grid.querySelectorAll('.research-card[data-bg]').forEach((card) => {
-      card.addEventListener('pointerenter', (e) => {
-        if (e.pointerType !== 'touch') activate(card.dataset.bg);
+    // Phones show just the artwork (titles rewrap inside their circles);
+    // wider screens leave room for the titles that overhang it, as on the slide.
+    function updateViewBox() {
+      venn.setAttribute('viewBox', narrow.matches ? venn.dataset.vbNarrow : venn.dataset.vbWide);
+    }
+
+    // Pop-ups sit beside the diagram (its overhanging titles included), never on
+    // top of it, so every region and word stays visible and clickable. Left-hand regions (and the top and centre ones) open
+    // to the left, right-hand ones to the right. Without that room, the
+    // pop-up becomes a sheet at the bottom of the screen.
+    const POP_W = 256, GAP = 16;
+    const SIDE = { g: 'left', gh: 'left', h: 'left', ghm: 'left', gm: 'right', m: 'right', hm: 'right' };
+    function updateMode() {
+      const box = map.getBoundingClientRect(), a = venn.getBoundingClientRect();
+      const room = Math.min(a.left - box.left, box.right - a.right);
+      map.classList.toggle('is-sheet', room < POP_W + GAP);
+    }
+
+    const NS = 'http://www.w3.org/2000/svg';
+    function place() {
+      linesSvg.replaceChildren();
+      if (!open || map.classList.contains('is-sheet')) return;
+      const desc = descs[open];
+      const box = map.getBoundingClientRect();
+      const a = venn.getBoundingClientRect();
+      const t = anchors[open].getBoundingClientRect();
+      const w = desc.offsetWidth, h = desc.offsetHeight;
+      const right = SIDE[open] === 'right';
+      const left = right ? a.right - box.left + GAP : a.left - box.left - GAP - w;
+      const ty = t.top + t.height / 2 - box.top;
+      const top = Math.max(0, Math.min(box.height - h, ty - 24));
+      desc.style.left = `${left}px`;
+      desc.style.top = `${top}px`;
+
+      // line from the pop-up's near edge (heading height) to the nearest point of the region's words
+      const ax = right ? left : left + w, ay = Math.min(top + 24, top + h - 8);
+      const pad = 6;
+      const ex = Math.max(t.left - box.left - pad, Math.min(t.right - box.left + pad, ax));
+      const ey = Math.max(t.top - box.top - pad, Math.min(t.bottom - box.top + pad, ay));
+      const path = document.createElementNS(NS, 'path');
+      path.setAttribute('d', `M${ax.toFixed(1)} ${ay.toFixed(1)} L${ex.toFixed(1)} ${ey.toFixed(1)}`);
+      path.setAttribute('class', 'rline');
+      path.style.setProperty('--c', getComputedStyle(desc).getPropertyValue('--c'));
+      linesSvg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+      linesSvg.append(path);
+    }
+
+    // ── open / close ──
+    function setOpen(key, { focus = false } = {}) {
+      if (key === open) return;
+      const prev = open;
+      open = key;
+      for (const k of Object.keys(descs)) {
+        const on = k === key;
+        descs[k].classList.toggle('is-open', on);
+        if (anchors[k]) anchors[k].setAttribute('aria-expanded', String(on));
+        if (regions[k]) regions[k].classList.toggle('is-on', on);
+      }
+      showLayer(key || '0');
+      updateMode();
+      place();
+      if (key && focus) descs[key].focus({ preventScroll: true });
+      if (!key && prev && descs[prev].contains(document.activeElement)) {
+        anchors[prev].focus({ preventScroll: true });
+      }
+    }
+
+    function setHover(key) {
+      if (key === hover) return;
+      hover = key;
+      for (const k of Object.keys(regions)) regions[k].classList.toggle('is-hover', k === key);
+    }
+
+    // ── input ──
+    venn.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') setHover(regionAt(e.clientX, e.clientY)); });
+    venn.addEventListener('pointerleave', () => setHover(null));
+    venn.addEventListener('click', (e) => {
+      const anchor = e.target.closest && e.target.closest('.v-anchor');
+      const key = anchor ? anchor.dataset.anchor : regionAt(e.clientX, e.clientY);
+      setOpen(key === open ? null : key);
+    });
+    for (const [k, anchor] of Object.entries(anchors)) {
+      anchor.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        setOpen(k === open ? null : k, { focus: true });
       });
-      card.addEventListener('click', () => {
-        if (lastPointer !== 'touch') return;
-        activate(active === layers[card.dataset.bg] ? '0' : card.dataset.bg);
-      });
+      anchor.addEventListener('focus', () => setHover(k));
+      anchor.addEventListener('blur', () => setHover(null));
+    }
+    map.querySelectorAll('.rclose').forEach((btn) => btn.addEventListener('click', () => setOpen(null)));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) setOpen(null); });
+    document.addEventListener('click', (e) => {
+      if (open && !venn.contains(e.target) && !descs[open].contains(e.target)) setOpen(null);
     });
 
-    grid.addEventListener('pointerleave', (e) => {
-      if (e.pointerType !== 'touch') activate('0');
-    });
+    let raf = 0;
+    const relayout = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => { updateViewBox(); updateMode(); place(); });
+    };
+    if ('ResizeObserver' in window) new ResizeObserver(relayout).observe(map);
+    window.addEventListener('resize', relayout);
+    updateViewBox();
+    updateMode();
 
     if ('IntersectionObserver' in window) {
       new IntersectionObserver((entries) => {
         entries.forEach((entry) => { onScreen = entry.isIntersecting; });
-        if (onScreen) playActive(); else pauseActive();
+        if (onScreen) playActive();
+        else { pauseActive(); if (open) setOpen(null); }
       }, { threshold: 0 }).observe(section);
     } else {
       onScreen = true;
