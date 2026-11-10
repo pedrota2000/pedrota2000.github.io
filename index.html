@@ -59,14 +59,14 @@
     :root {
       --bg0: #020617;
       --bg1: #0f172a;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --dim: #8494aa;            /* secondary text: at least 5.9:1 on cards, 6.5:1 on the page */
+      --text: #eef2f7;
+      --muted: #a8b4c5;
+      --dim: #97a5b9;            /* secondary text: about 7:1 on the page and on cards */
       --accent: #38bdf8;
       --accent2: #818cf8;
       --accent3: #34d399;
       --border: rgba(56, 189, 248, 0.12);
-      --card-bg: rgba(17, 24, 39, 0.80);
+      --card-bg: rgba(17, 24, 39, 0.95);
       --radius: 12px;
       --nav-h: 58px;
       --shadow-soft: 0 10px 30px rgba(2, 6, 23, 0.28);
@@ -436,21 +436,15 @@
       height: min(100vh, 100%);
     }
 
-    /* Keep the plots to the margins. A dark veil sits over the text column (1120 px
-       plus a little), lighter towards the screen edges, so the text always reads on
-       a nearly plain background. Narrow screens get the column value everywhere. */
-    .bg-img::after,
-    .bg-stick::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      background: linear-gradient(to right,
-        rgba(2, 6, 23, 0.30) 0,
-        rgba(2, 6, 23, 0.72) calc(50% - 600px),
-        rgba(2, 6, 23, 0.72) calc(50% + 600px),
-        rgba(2, 6, 23, 0.30) 100%);
+    /* Text over the plots. Rather than dimming the plots, every piece of text in a
+       section gets a soft dark halo: it separates the letters from whatever is
+       behind them, so the backgrounds can stay as vivid as they are. */
+    main section {
+      text-shadow: 0 0 2px rgba(2, 6, 23, 0.95), 0 0 9px rgba(2, 6, 23, 0.85);
+    }
+    /* Cards already sit on their own dark fill, so they skip the halo (it costs paint time). */
+    main section :is(.pub-card, .pub-intro, .card, .supervisor-card, .cv-download, .contact-row, .rdesc) {
+      text-shadow: none;
     }
 
     /* Soften the seams where one section's plot meets the next. */
@@ -543,7 +537,7 @@
     }
 
     .card {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.35));
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
       border: 1px solid rgba(56, 189, 248, 0.14);
       border-left: 2px solid rgba(56, 189, 248, 0.46);
       border-radius: 6px;
@@ -629,7 +623,7 @@
       position: relative;
       z-index: 3;
       padding: 0.75rem 0.95rem 0.8rem;
-      background: rgba(9, 15, 31, 0.84);
+      background: rgba(9, 15, 31, 0.95);
       border: 1px solid rgba(148, 163, 184, 0.14);
       border-left: 2px solid var(--c);
       border-radius: 6px;
@@ -781,7 +775,8 @@
 
     /* ── Publications ─────────────────────────────────────────── */
     .pub-card {
-      background: linear-gradient(130deg, rgba(15, 23, 42, 0.68), rgba(15, 23, 42, 0.38));
+      scroll-margin-top: calc(var(--nav-h) + 20px);   /* in-page links (e.g. from the Research pop-ups) clear the nav */
+      background: linear-gradient(130deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
       border: 1px solid rgba(56, 189, 248, 0.14);
       border-left: 2px solid rgba(129, 140, 248, 0.4);
       border-radius: 6px;
@@ -828,7 +823,7 @@
       padding: 0.85rem 1rem;
       border: 1px solid rgba(129, 140, 248, 0.35);
       border-radius: 6px;
-      background: rgba(15, 23, 42, 0.26);
+      background: rgba(15, 23, 42, 0.9);
       font-size: 0.96rem;
       color: var(--muted);
       text-align: center;
@@ -920,7 +915,7 @@
       border: 1px solid rgba(52, 211, 153, 0.28);
       border-left: 2px solid rgba(52, 211, 153, 0.55);
       border-radius: 6px;
-      background: linear-gradient(130deg, rgba(15, 23, 42, 0.68), rgba(15, 23, 42, 0.35));
+      background: linear-gradient(130deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
     }
 
     .cv-download-title { font-size: 1.05rem; font-weight: 600; color: var(--text); }
@@ -960,7 +955,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0.75rem 1rem;
-      background: linear-gradient(130deg, rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.35));
+      background: linear-gradient(130deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
       border: 1px solid rgba(56, 189, 248, 0.14);
       border-left: 2px solid rgba(52, 211, 153, 0.42);
       border-radius: 6px;
@@ -1179,7 +1174,7 @@
     </p>
 
     <p>
-      I am a member of the Simons Collaboration for the Geometry of Flows, where I work on
+      I am a member of the Simons Initiative on the Geometry of Flows, where I work on
       turbulence, and I have contributed to <em>Denario</em>, a multi-agent AI system for scientific
       research. Most of my work is collaborative. A research stay with Pavlos Protopapas at Harvard
       SEAS in 2024 started a series of joint papers, and in December 2026 I will visit the Institute
@@ -1262,6 +1257,9 @@
           relativity in asymptotically AdS spacetimes follows it in real time, and quasinormal modes of
           black branes probe its stability.
         </p>
+        <div class="rlinks">
+          <a href="https://github.com/pedrota2000/QUASTELL" target="_blank" rel="noopener">QUASTELL code</a>
+        </div>
       </article>
 
       <article class="rdesc rd-gh" id="rd-gh" data-r="gh">
@@ -1270,8 +1268,12 @@
         <p>
           A strongly coupled fluid becomes a black-brane geometry: bubble walls and turbulent eddies
           turn into dynamics of spacetime, giving access to quantities that are hard to compute from
-          the fluid alone.
+          the fluid alone. Holography also tests effective scalar–fluid models of phase transitions,
+          and gives the friction coefficient that sets how fast bubble walls move.
         </p>
+        <div class="rlinks">
+          <a href="#pub-scalar-fluid">Preprint 2026</a>
+        </div>
       </article>
 
       <article class="rdesc rd-h" id="rd-h" data-r="h">
@@ -1280,7 +1282,7 @@
         <p>
           Bubbles in first-order phase transitions and the gravitational waves their flows source.
           Non-conformal equations of state obstruct some expansion modes and, for QCD-like theories,
-          rule out detonations. Also turbulence, in the Simons Collaboration for the Geometry of Flows.
+          rule out detonations. Also turbulence, in the Simons Initiative on the Geometry of Flows.
         </p>
         <div class="rlinks">
           <a href="https://arxiv.org/abs/2607.27874" target="_blank" rel="noopener">Preprint 2026</a>
@@ -1308,11 +1310,13 @@
         <h3>Machine learning</h3>
         <p>
           Physics-informed neural networks for stiff and inverse problems, such as the Calderón problem
-          of impedance tomography, and <em>Denario</em>, a multi-agent AI system that proposes ideas,
-          writes code and drafts papers.
+          of impedance tomography, and for Hamilton–Jacobi–Isaacs equations, where a small residual can
+          still hide the wrong solution. Also <em>Denario</em>, a multi-agent AI system that proposes
+          ideas, writes code and drafts papers.
         </p>
         <div class="rlinks">
           <a href="https://arxiv.org/abs/2606.28158" target="_blank" rel="noopener">Calderón 2026</a>
+          <a href="https://arxiv.org/abs/2610.27193" target="_blank" rel="noopener">Hamilton–Jacobi–Isaacs 2026</a>
           <a href="https://doi.org/10.1103/kk55-gc95" target="_blank" rel="noopener">Denario, PRX Intell. 2026</a>
         </div>
       </article>
@@ -1349,6 +1353,40 @@
     <div class="section-bg" aria-hidden="true"><div class="bg-img" style="--bg:url(bg/publications.webp);--bg-sm:url(bg/publications-sm.webp)"></div></div>
     <div class="bg-caption" aria-hidden="true">Background: allowed and obstructed bubble expansion modes, from <em>Non-conformal obstructions to bubble expansion</em></div>
     <h2 class="section-title">Publications</h2>
+
+    <div class="pub-card" id="pub-scalar-fluid">
+      <div class="pub-year">2026 · Preprint</div>
+      <div class="pub-title">Effective scalar–fluid description of thermal first-order phase transitions and their spinodal instabilities</div>
+      <div class="pub-authors">A. Caddeo, O. Henriksson, C. Hoyos, M. Sanchez-Garitaonandia, <strong>P. Tarancón-Álvarez</strong></div>
+      <div class="pub-journal">Submitted to arXiv, November 2026</div>
+      <p class="pub-summary">
+        An improved effective description of thermal first-order phase transitions in relativistic
+        theories, in which a scalar order parameter is coupled to a fluid, tested against a microscopic
+        calculation in a holographic model. It identifies a friction coefficient that sets the
+        bubble-wall velocity and can be extracted from a holographic correlator.
+      </p>
+      <div class="pub-links">
+        <a class="pub-link" href="https://github.com/pedrota2000/QUASTELL" target="_blank" rel="noopener">Code (QUASTELL)</a>
+      </div>
+    </div>
+
+    <div class="pub-card">
+      <div class="pub-year">2026 · Preprint</div>
+      <div class="pub-title">Low Residuals, Wrong Value: Learning the Viscosity Solution of Hamilton–Jacobi–Isaacs Equations with PINNs</div>
+      <div class="pub-authors">R. Jimenez, P. Tejerina-Pérez, L. Sarieddine, <strong>P. Tarancón-Álvarez</strong>, M. Traforetti, P. Solé-Vilaró, O. Ignatenko, N. Tkach, P. Protopapas</div>
+      <div class="pub-journal">arXiv:2610.27193 [math.NA]</div>
+      <p class="pub-summary">
+        For Hamilton–Jacobi–Isaacs equations a small PDE residual does not certify a learned
+        solution: standard PINNs converge to almost-everywhere solutions that differ from the
+        viscosity solution by order one. Giving the network geodesic-distance information recovers
+        the viscosity solution, and a mesh-free semiconcavity test detects the failure without
+        knowing the exact answer.
+      </p>
+      <div class="pub-links">
+        <a class="pub-link" href="https://arxiv.org/abs/2610.27193" target="_blank" rel="noopener">arXiv</a>
+        <a class="pub-link pdf" href="https://arxiv.org/pdf/2610.27193" target="_blank" rel="noopener">PDF</a>
+      </div>
+    </div>
 
     <div class="pub-card">
       <div class="pub-year">2026 · Preprint · under review</div>
@@ -1557,7 +1595,7 @@
       <div>
         <div class="cv-download-title">Full academic CV</div>
         <div class="cv-download-sub">
-          Complete publications, talks, schools, teaching, service and outreach · PDF, 5 pages · updated October 2026
+          Annotated publications and software, talks with slides, schools, teaching, service and outreach · PDF, 7 pages · updated November 2026
         </div>
       </div>
       <a class="cv-download-btn" href="Pedro_Tarancon_Alvarez_CV.pdf" target="_blank" rel="noopener">↓ Download CV (PDF)</a>
@@ -1585,8 +1623,9 @@
         <div class="timeline-role">PhD in Theoretical Physics and Cosmology</div>
         <div class="timeline-place">Institute of Cosmos Sciences (ICCUB) · Universitat de Barcelona</div>
         <div class="timeline-desc">
-          Supervised by David Mateos and Raúl Jiménez, funded by an FPI fellowship
-          (<em>Ministerio de Ciencia e Innovación</em>).
+          Thesis: <em>Holography in the Gravitational Wave Era</em> (provisional title), defence
+          expected July 2027. Supervised by David Mateos and Raúl Jiménez, funded by an FPI
+          fellowship (<em>Ministerio de Ciencia e Innovación</em>).
         </div>
       </div>
 
@@ -1621,7 +1660,7 @@
         <div class="timeline-date">December 2026 · upcoming</div>
         <div class="timeline-role">Research visit</div>
         <div class="timeline-place">Institute for Advanced Study, Princeton — host: James M. Stone</div>
-        <div class="timeline-desc">Vortex interactions and turbulence.</div>
+        <div class="timeline-desc">An effective theory of vortex interactions, based on enstrophy and a multipole expansion.</div>
       </div>
 
       <div class="timeline-item">
@@ -1634,7 +1673,7 @@
         <div class="timeline-date">June 2025</div>
         <div class="timeline-role">Research visit</div>
         <div class="timeline-place">Center for Computational Astrophysics, Flatiron Institute, New York — host: Francisco Villaescusa-Navarro</div>
-        <div class="timeline-desc">Work on the <em>Denario</em> multi-agent AI system.</div>
+        <div class="timeline-desc">Work on the <em>Denario</em> multi-agent AI system; set up access to the Rusty cluster.</div>
       </div>
 
       <div class="timeline-item">
@@ -1645,9 +1684,17 @@
       </div>
 
       <div class="timeline-item">
+        <div class="timeline-date">March – September 2023</div>
+        <div class="timeline-role">JAE Intro Research Fellow (CSIC)</div>
+        <div class="timeline-place">Instituto de Física Teórica UAM-CSIC, Madrid — supervisor: Juan F. Pedraza</div>
+        <div class="timeline-desc">Holography and quantum chaos: out-of-time-order correlators in Centaur geometries, which connect an AdS exterior to a dS interior.</div>
+      </div>
+
+      <div class="timeline-item">
         <div class="timeline-date">2021 – 2022</div>
-        <div class="timeline-role">Collaboration Grantee (Ministry of Education)</div>
-        <div class="timeline-place">Universidad Complutense de Madrid — MOSAIC instrument for the ELT</div>
+        <div class="timeline-role">Undergraduate Research Fellow (Ministry of Education)</div>
+        <div class="timeline-place">Department of Earth Physics and Astrophysics · Universidad Complutense de Madrid</div>
+        <div class="timeline-desc">Prototype control system for the MOSAIC instrument of the ELT, with the GUAIX and ISCAR groups.</div>
       </div>
 
     </div>
@@ -1659,6 +1706,12 @@
         <div class="timeline-date">2023 – 2027</div>
         <div class="timeline-role">FPI Predoctoral Fellowship</div>
         <div class="timeline-place">Spanish Ministry of Science and Innovation (PRE2022-102220) · national competition</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2023</div>
+        <div class="timeline-role">JAE Intro Fellowship</div>
+        <div class="timeline-place">Spanish National Research Council (CSIC) · national competition</div>
       </div>
 
       <div class="timeline-item">
@@ -1679,17 +1732,20 @@
     <div class="timeline">
 
       <div class="timeline-item">
-        <div class="timeline-date">October 2026 · Talk (upcoming)</div>
+        <div class="timeline-date">October 2026 · Talk</div>
         <div class="timeline-role">"Non-conformal obstructions to bubble expansion"</div>
-        <div class="timeline-place">VAST 2026: From Vacuum Stability to Gravitational Waves · Madrid</div>
+        <div class="timeline-place">Barcelona Initiative for Gravitation (BIG) meeting · Barcelona</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/big-2026-non-conformal-bubbles.pdf" target="_blank" rel="noopener">Slides (PDF)</a>
+        </div>
       </div>
 
       <div class="timeline-item">
-        <div class="timeline-date">January 2026 · Poster</div>
+        <div class="timeline-date">October 2026 · Talk</div>
         <div class="timeline-role">"Non-conformal obstructions to bubble expansion"</div>
-        <div class="timeline-place">Iberian Strings 2026 · IGFAE, Santiago de Compostela</div>
+        <div class="timeline-place">VAST 2026: From Vacuum Stability to Gravitational Waves · Madrid</div>
         <div class="timeline-links">
-          <a class="pub-link pdf" href="talks/iberian-strings-2026-poster.pdf" target="_blank" rel="noopener">Poster (PDF)</a>
+          <a class="pub-link pdf" href="talks/vast-2026-non-conformal-bubbles.pdf" target="_blank" rel="noopener">Slides (PDF)</a>
         </div>
       </div>
 
@@ -1699,6 +1755,15 @@
         <div class="timeline-place">AI &amp; PDE: ICLR 2026 Workshop · Rio de Janeiro</div>
         <div class="timeline-links">
           <a class="pub-link pdf" href="talks/iclr-2026-ai-pde-poster.pdf" target="_blank" rel="noopener">Poster (PDF)</a>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">January 2026 · Poster</div>
+        <div class="timeline-role">"Non-conformal obstructions to bubble expansion"</div>
+        <div class="timeline-place">Iberian Strings 2026 · IGFAE, Santiago de Compostela</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/iberian-strings-2026-poster.pdf" target="_blank" rel="noopener">Poster (PDF)</a>
         </div>
       </div>
 
@@ -1715,12 +1780,18 @@
         <div class="timeline-date">September 2025 · Internal seminar</div>
         <div class="timeline-role">"The Denario Project" (with Licia Verde and Raúl Jiménez)</div>
         <div class="timeline-place">ICCUB · Universitat de Barcelona</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/iccub-2025-denario-seminar.pdf" target="_blank" rel="noopener">Slides (PDF)</a>
+        </div>
       </div>
 
       <div class="timeline-item">
         <div class="timeline-date">July 2025 · Poster</div>
         <div class="timeline-role">"Gravitational Duals from Equations of State"</div>
         <div class="timeline-place">"Gravity — New Quantum and String Perspectives" · Centro de Ciencias de Benasque Pedro Pascual</div>
+        <div class="timeline-links">
+          <a class="pub-link pdf" href="talks/benasque-2025-gravitational-duals-poster.pdf" target="_blank" rel="noopener">Poster (PDF)</a>
+        </div>
       </div>
 
       <div class="timeline-item">
@@ -1760,8 +1831,8 @@
       </div>
 
       <div class="timeline-item">
-        <div class="timeline-date">June 2022 · Invited speaker</div>
-        <div class="timeline-role">Seminar presenting the MOSAIC project</div>
+        <div class="timeline-date">June 2022 · Seminar</div>
+        <div class="timeline-role">The MOSAIC instrument for the ELT (co-organiser and speaker)</div>
         <div class="timeline-place">X Jornadas de Introducción a la Investigación · Universidad Complutense de Madrid</div>
       </div>
 
@@ -1771,17 +1842,17 @@
     <ul class="compact-list">
       <li><span class="cl-year">2026</span><span><span class="cl-what">Workshop on Holography and Dense Matter</span> · APC, Paris</span></li>
       <li><span class="cl-year">2026</span><span><span class="cl-what">Geometry of Flows meeting</span> · New York University</span></li>
-      <li><span class="cl-year">2026</span><span><span class="cl-what">Simons Collaboration for the Geometry of Flows retreat: Explainability in ML &amp; Multi-Agent Inference</span> · Canfranc Underground Laboratory</span></li>
+      <li><span class="cl-year">2026</span><span><span class="cl-what">Simons Initiative on the Geometry of Flows retreat: Explainability in ML &amp; Multi-Agent Inference</span> · Canfranc Underground Laboratory</span></li>
       <li><span class="cl-year">2026</span><span><span class="cl-what">Geometry of Flows Workshop</span> · Flatiron Institute, New York</span></li>
       <li><span class="cl-year">2026</span><span><span class="cl-what">AI &amp; PDE: ICLR 2026 Workshop on AI and Partial Differential Equations</span> · Rio de Janeiro</span></li>
       <li><span class="cl-year">2026</span><span><span class="cl-what">Iberian Strings 2026</span> · IGFAE, Santiago de Compostela</span></li>
       <li><span class="cl-year">2025</span><span><span class="cl-what">ETH-ITS Workshop "Geometry of Flows"</span> · ETH Zurich</span></li>
-      <li><span class="cl-year">2025</span><span><span class="cl-what">Simons Collaboration for the Geometry of Flows meeting</span> · Institute for Advanced Study, Princeton</span></li>
+      <li><span class="cl-year">2025</span><span><span class="cl-what">Simons Initiative on the Geometry of Flows meeting</span> · Institute for Advanced Study, Princeton</span></li>
       <li><span class="cl-year">2025</span><span><span class="cl-what">"Gravity — New Quantum and String Perspectives"</span> · Centro de Ciencias de Benasque Pedro Pascual</span></li>
       <li><span class="cl-year">2025</span><span><span class="cl-what">Workshop "New Insights in Black Hole Physics from Holography"</span> · IFT, Madrid</span></li>
       <li><span class="cl-year">2025</span><span><span class="cl-what">GGI School on asymptotic symmetries and flat holography</span> · Galileo Galilei Institute, Florence</span></li>
       <li><span class="cl-year">2025</span><span><span class="cl-what">Iberian Strings 2025</span> · Bizkaia Aretoa, Bilbao</span></li>
-      <li><span class="cl-year">2024–2025</span><span><span class="cl-what">Barcelona Initiative for Gravitation (BIG) Meetings, 4th–7th</span> · Barcelona</span></li>
+      <li><span class="cl-year">2024–2026</span><span><span class="cl-what">Barcelona Initiative for Gravitation (BIG) meetings, from the 4th (2024) to October 2026</span> · Barcelona</span></li>
       <li><span class="cl-year">2023, 2025</span><span><span class="cl-what">Cross-Collserola PhD Meeting in Astrophysics, Cosmology and Particles</span> · Barcelona</span></li>
       <li><span class="cl-year">2024</span><span><span class="cl-what">"The Complexity of the Cosmos" and "Gravitational duals from equations of state"</span> · Gran Sasso Science Institute, L'Aquila</span></li>
       <li><span class="cl-year">2024</span><span><span class="cl-what">COSMO CLASSIC 2024: future prospects for Cosmology</span> · Asiago</span></li>
@@ -1791,6 +1862,7 @@
       <li><span class="cl-year">2024</span><span><span class="cl-what">CERN Winter School on Supergravity, Strings and Gauge Theory</span> · CERN, Geneva</span></li>
       <li><span class="cl-year">2024</span><span><span class="cl-what">ComputeFest 2024: Physics-Informed Neural Networks</span> · Harvard IACS (16 h)</span></li>
       <li><span class="cl-year">2023–2024</span><span><span class="cl-what">ICCUB Machine Learning Workshop (2023) and ICCUB Winter Meeting (2024)</span> · Barcelona</span></li>
+      <li><span class="cl-year">2021</span><span><span class="cl-what">Phy6cool summer school on particle physics and cosmology</span> · CIEMAT, Madrid (47 h)</span></li>
     </ul>
 
     <p class="cv-label">Teaching</p>
@@ -1811,7 +1883,7 @@
     <div class="timeline">
 
       <div class="timeline-item">
-        <div class="timeline-date">2026 – present</div>
+        <div class="timeline-date">2025 – present</div>
         <div class="timeline-role">Seminar organiser</div>
         <div class="timeline-place">Quantum Field Theory and String Theory group · ICCUB, Universitat de Barcelona</div>
       </div>
@@ -1819,12 +1891,12 @@
       <div class="timeline-item">
         <div class="timeline-date">2026</div>
         <div class="timeline-role">Referee</div>
-        <div class="timeline-place"><em>Astronomy and Computing</em> (Elsevier)</div>
+        <div class="timeline-place"><em>Astronomy and Computing</em> (Elsevier) · certificate of reviewing awarded</div>
       </div>
 
       <div class="timeline-item">
         <div class="timeline-date">2025 – present</div>
-        <div class="timeline-role">Member, Simons Collaboration for the Geometry of Flows</div>
+        <div class="timeline-role">Member, Simons Initiative on the Geometry of Flows</div>
       </div>
 
     </div>
@@ -1850,6 +1922,11 @@
       <div class="timeline-item">
         <div class="timeline-role"><a href="https://github.com/pedrota2000/PDE_embeddings" target="_blank" rel="noopener">PDE_embeddings</a></div>
         <div class="timeline-place">Multi-head PINN framework and latent-space diagnostics for PDE solution families.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-role"><a href="https://github.com/pedrota2000/QUASTELL" target="_blank" rel="noopener">QUASTELL</a></div>
+        <div class="timeline-place">Julia package for the backgrounds, thermodynamics and quasinormal-mode spectra of holographic black branes.</div>
       </div>
 
       <div class="timeline-item">
@@ -1884,6 +1961,18 @@
         </div>
       </div>
 
+      <div class="timeline-item">
+        <div class="timeline-date">2021 · Volunteer</div>
+        <div class="timeline-role">Citizen-science activity <em>StreetSpectra</em> (spectra of street lights)</div>
+        <div class="timeline-place">Science Week · Universidad Complutense de Madrid</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2020 · Award</div>
+        <div class="timeline-role">Winner (video category), outreach contest <em>Luz en Casa</em></div>
+        <div class="timeline-place">International Day of Light 2020 · Department of Optics, UCM — team video <em>Experimento de Hertz</em></div>
+      </div>
+
     </div>
 
     <p class="cv-label">Skills &amp; tools</p>
@@ -1912,6 +2001,7 @@
         <span class="badge">Git</span>
         <span class="badge">Spanish (native)</span>
         <span class="badge">English (fluent · B2)</span>
+        <span class="badge">Catalan (basic)</span>
         <span class="badge">French (basic · A2)</span>
       </div>
     </div>
