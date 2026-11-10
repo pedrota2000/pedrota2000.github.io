@@ -61,6 +61,7 @@
       --bg1: #0f172a;
       --text: #e2e8f0;
       --muted: #94a3b8;
+      --dim: #8494aa;            /* secondary text: at least 5.9:1 on cards, 6.5:1 on the page */
       --accent: #38bdf8;
       --accent2: #818cf8;
       --accent3: #34d399;
@@ -435,6 +436,23 @@
       height: min(100vh, 100%);
     }
 
+    /* Keep the plots to the margins. A dark veil sits over the text column (1120 px
+       plus a little), lighter towards the screen edges, so the text always reads on
+       a nearly plain background. Narrow screens get the column value everywhere. */
+    .bg-img::after,
+    .bg-stick::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(to right,
+        rgba(2, 6, 23, 0.30) 0,
+        rgba(2, 6, 23, 0.72) calc(50% - 600px),
+        rgba(2, 6, 23, 0.72) calc(50% + 600px),
+        rgba(2, 6, 23, 0.30) 100%);
+    }
+
     /* Soften the seams where one section's plot meets the next. */
     main section > .section-bg::before,
     main section > .section-bg::after,
@@ -485,7 +503,7 @@
       margin: 0;
       font-size: 0.72rem;
       font-style: italic;
-      color: #56657c;
+      color: #6b7a90;
       text-align: right;
       line-height: 1.4;
       pointer-events: none;
@@ -778,7 +796,7 @@
     .pub-year    { font-size: 0.84rem; color: var(--accent); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.34rem; }
     .pub-title   { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 0.34rem; line-height: 1.5; }
     .pub-authors { font-size: 0.92rem; color: var(--muted); margin-bottom: 0.45rem; }
-    .pub-journal { font-size: 0.9rem; color: #64748b; margin-bottom: 0.65rem; font-style: italic; }
+    .pub-journal { font-size: 0.9rem; color: var(--dim); margin-bottom: 0.65rem; font-style: italic; }
     .pub-summary { font-size: 0.92rem; color: var(--muted); margin-bottom: 0.65rem; line-height: 1.6; max-width: 92ch; }
     .pub-links   { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
 
@@ -803,7 +821,7 @@
     .pub-link.pdf:hover { background: rgba(52,211,153,0.14); }
     .pub-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-    .cite-badge { font-size: 0.75rem; color: #64748b; }
+    .cite-badge { font-size: 0.75rem; color: var(--dim); }
 
     .pub-intro {
       margin: 1.25rem auto 0.25rem;
@@ -849,7 +867,7 @@
     .timeline-date  { font-size: 0.86rem; color: var(--accent); font-weight: 600; letter-spacing: 0.04em; margin-bottom: 0.22rem; }
     .timeline-role  { font-size: 1.05rem; font-weight: 600; color: var(--text); }
     .timeline-place { font-size: 0.96rem; color: var(--muted); margin-top: 0.12rem; }
-    .timeline-desc  { font-size: 0.94rem; color: #64748b; margin-top: 0.45rem; line-height: 1.68; }
+    .timeline-desc  { font-size: 0.94rem; color: var(--dim); margin-top: 0.45rem; line-height: 1.68; }
     .timeline-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
 
     .timeline-grade {
@@ -1007,7 +1025,7 @@
 
     .contact-note {
       font-size: 0.96rem;
-      color: #64748b;
+      color: var(--dim);
       line-height: 1.7;
       max-width: 72ch;
     }
@@ -1018,7 +1036,7 @@
     footer {
       text-align: center;
       padding: 2.5rem 1rem;
-      color: #334155;
+      color: var(--dim);
       font-size: 0.85rem;
       border-top: 1px solid rgba(56,189,248,0.06);
     }
@@ -1550,12 +1568,12 @@
       <div class="supervisor-card">
         <div class="s-name">David Mateos</div>
         <div class="s-role">ICREA Professor · ICCUB, Universitat de Barcelona</div>
-        <div class="s-role" style="margin-top:0.3rem;color:#64748b;">Holography, strongly-coupled QCD, hydrodynamics</div>
+        <div class="s-role" style="margin-top:0.3rem;color:var(--dim);">Holography, strongly-coupled QCD, hydrodynamics</div>
       </div>
       <div class="supervisor-card">
         <div class="s-name">Raúl Jiménez</div>
         <div class="s-role">ICREA Professor · ICCUB, Universitat de Barcelona</div>
-        <div class="s-role" style="margin-top:0.3rem;color:#64748b;">Cosmology, dark energy, machine learning in physics</div>
+        <div class="s-role" style="margin-top:0.3rem;color:var(--dim);">Cosmology, dark energy, machine learning in physics</div>
       </div>
     </div>
 
